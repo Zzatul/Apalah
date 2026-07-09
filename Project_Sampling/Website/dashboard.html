@@ -13,20 +13,25 @@
 <body class="glass-body">
 
     <!-- Floating Sidebar Kiri -->
-    <aside class="sidebar-pill">
-        <div class="logo-icon"><img src="vanguard-logo.jpeg" alt="Logo" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover; box-shadow: 0 4px 8px rgba(0,0,0,0.15);"></div>
-        <a href="#" class="active" id="nav-dashboard" onclick="switchView('dashboard')" data-bs-toggle="tooltip" data-bs-placement="right" title="Dashboard Utama"><i class="bi bi-house-door-fill"></i></a>
-        <a href="#" id="nav-settings" onclick="switchView('settings')" data-bs-toggle="tooltip" data-bs-placement="right" title="Pengaturan Sistem"><i class="bi bi-sliders"></i></a>
+    <aside class="sidebar-pill" style="position: relative;">
+        <div class="logo-icon d-flex justify-content-center align-items-center"><img src="logo.png" alt="Logo" style="width: 58px; height: auto; object-fit: contain; filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.15));"></div>
+        <a href="#" class="active" id="nav-dashboard" onclick="switchView('dashboard'); event.preventDefault();" data-bs-toggle="tooltip" data-bs-placement="right" title="Dashboard Utama"><i class="bi bi-house-door-fill"></i></a>
+        <a href="#" id="nav-settings" onclick="switchView('settings'); event.preventDefault();" data-bs-toggle="tooltip" data-bs-placement="right" title="Pengaturan Sistem"><i class="bi bi-sliders"></i></a>
         
         <div class="spacer"></div>
         
-        <a href="#" class="position-relative" data-bs-toggle="tooltip" data-bs-placement="right" title="Notifikasi Alarm">
+        <a href="#" class="position-relative" id="btn-notification" onclick="switchView('notifications'); event.preventDefault();" data-bs-toggle="tooltip" data-bs-placement="right" title="Notifikasi Alarm">
             <i class="bi bi-bell"></i>
-            <span class="position-absolute top-25 start-75 translate-middle p-1 bg-danger border border-light rounded-circle">
+            <span id="notif-badge" class="position-absolute top-25 start-75 translate-middle p-1 bg-danger border border-light rounded-circle" style="display: none;">
                 <span class="visually-hidden">New alerts</span>
             </span>
         </a>
-        <a href="#" onclick="logout()" data-bs-toggle="tooltip" data-bs-placement="right" title="Keluar Log Out"><i class="bi bi-box-arrow-right text-danger"></i></a>
+        
+        <a href="#" id="btn-help" onclick="switchView('help'); event.preventDefault();" data-bs-toggle="tooltip" data-bs-placement="right" title="Panduan Alat">
+            <i class="bi bi-question-circle"></i>
+        </a>
+        
+        <a href="#" onclick="logout(); event.preventDefault();" data-bs-toggle="tooltip" data-bs-placement="right" title="Keluar"><i class="bi bi-box-arrow-right text-danger"></i></a>
     </aside>
 
     <main class="main-content" id="view-dashboard">
@@ -66,50 +71,53 @@
 
         </header>
 
-        <!-- Area Kerja Utama (Flow/Cards) -->
-        <div class="workspace d-flex flex-nowrap custom-scrollbar pb-3 mb-3" id="containerChamber">
-            <!-- Chamber Nodes akan diisi oleh JS -->
-        </div>
+        <!-- Area Konten Utama di Bawah Toolbar -->
+        <div class="dashboard-content">
+            <!-- Area Kerja Utama (Flow/Cards) -->
+            <div class="workspace custom-scrollbar pb-3 mb-3" id="containerChamber">
+                <!-- Chamber Nodes akan diisi oleh JS -->
+            </div>
 
-        <!-- Panel Bawah (Analytics) -->
-        <footer class="bottom-panel">
-            <div class="panel-half">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h6 class="mb-0"><i class="bi bi-bar-chart-line-fill text-primary"></i> Grafik Global (Chamber 1)</h6>
-                    <div class="dropdown">
-                        <button class="btn btn-sm btn-light border dropdown-toggle py-0" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" style="font-size: 11px;">
-                            <i class="bi bi-funnel"></i> Filter
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end p-2 shadow-sm" style="font-size: 12px;">
-                            <li><div class="form-check"><input class="form-check-input global-chart-filter" type="checkbox" value="0" id="gchkSuhu" checked onchange="updateGlobalChartVisibility()"><label class="form-check-label text-danger fw-bold" for="gchkSuhu">Suhu</label></div></li>
-                            <li><div class="form-check"><input class="form-check-input global-chart-filter" type="checkbox" value="1" id="gchkLembap" checked onchange="updateGlobalChartVisibility()"><label class="form-check-label text-primary fw-bold" for="gchkLembap">Kelembapan</label></div></li>
-                            <li><div class="form-check"><input class="form-check-input global-chart-filter" type="checkbox" value="2" id="gchkTekanan" onchange="updateGlobalChartVisibility()"><label class="form-check-label text-success fw-bold" for="gchkTekanan">Tekanan</label></div></li>
-                            <li><div class="form-check"><input class="form-check-input global-chart-filter" type="checkbox" value="3" id="gchkMetana" onchange="updateGlobalChartVisibility()"><label class="form-check-label text-warning fw-bold" for="gchkMetana">Metana</label></div></li>
-                        </ul>
+            <!-- Panel Bawah (Analytics) -->
+            <footer class="bottom-panel">
+                <div class="panel-half">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0"><i class="bi bi-bar-chart-line-fill text-primary"></i> Grafik Global</h6>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-light border dropdown-toggle py-0" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" style="font-size: 11px;">
+                                <i class="bi bi-funnel"></i> Filter
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end p-2 shadow-sm" style="font-size: 12px;">
+                                <li><div class="form-check"><input class="form-check-input global-chart-filter" type="checkbox" value="0" id="gchkSuhu" checked onchange="updateGlobalChartVisibility()"><label class="form-check-label text-danger fw-bold" for="gchkSuhu">Suhu</label></div></li>
+                                <li><div class="form-check"><input class="form-check-input global-chart-filter" type="checkbox" value="1" id="gchkLembap" checked onchange="updateGlobalChartVisibility()"><label class="form-check-label text-primary fw-bold" for="gchkLembap">Kelembapan</label></div></li>
+                                <li><div class="form-check"><input class="form-check-input global-chart-filter" type="checkbox" value="2" id="gchkTekanan" onchange="updateGlobalChartVisibility()"><label class="form-check-label text-success fw-bold" for="gchkTekanan">Tekanan</label></div></li>
+                                <li><div class="form-check"><input class="form-check-input global-chart-filter" type="checkbox" value="3" id="gchkMetana" onchange="updateGlobalChartVisibility()"><label class="form-check-label text-warning fw-bold" for="gchkMetana">Metana</label></div></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div style="flex-grow: 1; position: relative;">
+                        <canvas id="globalChart"></canvas>
                     </div>
                 </div>
-                <div style="flex-grow: 1; position: relative;">
-                    <canvas id="globalChart"></canvas>
+                <div class="panel-half ps-4 border-start border-light border-2">
+                    <h6><i class="bi bi-list-check text-success"></i> Service Overview</h6>
+                    <div class="table-responsive">
+                        <table class="table table-borderless table-sm" style="font-size: 13px;">
+                            <thead>
+                                <tr class="text-muted">
+                                    <th>Chamber</th>
+                                    <th>Status Alat</th>
+                                    <th>Terakhir Update</th>    
+                                </tr>
+                            </thead>
+                            <tbody id="overview-table">
+                                <tr><td>Chamber 1</td><td><span class="badge bg-success">Aman</span></td><td>Barusan</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
-            <div class="panel-half ps-4 border-start border-light border-2">
-                <h6><i class="bi bi-list-check text-success"></i> Service Overview</h6>
-                <div class="table-responsive">
-                    <table class="table table-borderless table-sm" style="font-size: 13px;">
-                        <thead>
-                            <tr class="text-muted">
-                                <th>Chamber</th>
-                                <th>Status Alat</th>
-                                <th>Terakhir Update</th>    
-                            </tr>
-                        </thead>
-                        <tbody id="overview-table">
-                            <tr><td>Chamber 1</td><td><span class="badge bg-success">Aman</span></td><td>Barusan</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </footer>
+            </footer>
+        </div>
     </main>
 
     <!-- Modal Tambah Chamber -->
@@ -156,9 +164,9 @@
     <!-- MODAL DETAIL CHAMBER -->
     <div class="modal fade" id="modalDetail" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-xl">
-            <div class="modal-content" style="background: rgba(255,255,255,0.95); backdrop-filter: blur(15px); border-radius: 20px;">
+            <div class="modal-content">
                 <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold" style="color: #004A8F;"><i class="bi bi-cpu"></i> Detail - <span id="detailChamberTitle"></span></h5>
+                    <h5 class="modal-title fw-bold"><i class="bi bi-cpu"></i> Detail - <span id="detailChamberTitle"></span></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
@@ -221,8 +229,11 @@
                                 
                                 <!-- Mode Otomatis -->
                                 <div class="tab-pane fade" id="panel-otomatis" role="tabpanel">
-                                    <div class="text-center p-3 border rounded bg-white shadow-sm mt-2">
-                                        <p class="small text-muted mb-3">Atur jadwal presisi untuk otomatisasi Kipas dan Syringe tanpa intervensi manual.</p>
+                                    <div class="p-3 border rounded bg-white shadow-sm mt-2">
+                                        <p class="text-center small text-muted mb-3" id="otomatis-deskripsi">Atur jadwal presisi untuk otomatisasi Kipas dan Syringe tanpa intervensi manual.</p>
+                                        <div id="otomatis-list-container" class="mb-3 custom-scrollbar" style="display: none; max-height: 120px; overflow-y: auto;">
+                                            <!-- Daftar Jadwal akan diisi oleh JS -->
+                                        </div>
                                         <button class="btn btn-primary btn-sm w-100 fw-bold" data-bs-toggle="modal" data-bs-target="#modalJadwal">
                                             <i class="bi bi-calendar-plus"></i> Buka Editor Jadwal
                                         </button>
@@ -273,9 +284,9 @@
                             </div>
                             
                             <h6 class="fw-bold mb-2 text-secondary">Log Activity (Database)</h6>
-                            <div class="table-responsive" style="max-height: 200px; overflow-y: auto; border-radius: 10px; border: 1px solid #eee;">
+                            <div class="table-responsive" style="max-height: 200px; overflow-y: auto; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.08);">
                                 <table class="table table-hover table-sm text-center mb-0" style="font-size: 13px;">
-                                    <thead class="table-light sticky-top">
+                                    <thead class="sticky-top">
                                         <tr>
                                             <th>ID Data</th>
                                             <th>Suhu (°C)</th>
@@ -380,7 +391,7 @@
                 </div>
             </div>
             
-            <div class="col-md-6" id="uiPreferencesCard">
+            <div class="col-md-6" id="tampilan-setting">
                 <div class="p-4 bg-white rounded-4 shadow-sm border h-100">
                     <h5 class="fw-bold mb-3"><i class="bi bi-moon-stars-fill text-dark"></i> Preferensi Tampilan</h5>
                     <p class="text-muted small">Aktifkan Mode Gelap (Dark Mode) agar lebih nyaman di malam hari.</p>
@@ -393,7 +404,7 @@
         </div>
 
         <div class="row mb-4">
-            <div class="col-md-12" id="thresholdCard">
+            <div class="col-md-12" id="threshold-setting">
                 <div class="p-4 bg-white rounded-4 shadow-sm border h-100">
                     <h5 class="fw-bold mb-3"><i class="bi bi-exclamation-triangle-fill text-danger"></i> Ambang Batas Sensor (Thresholds)</h5>
                     <p class="text-muted small">Tentukan nilai ambang batas peringatan dini. Jika nilai sensor melewati batas ini, indikator kartu chamber akan menyala berdenyut merah.</p>
@@ -425,6 +436,119 @@
         </div>
     </main>
 
+    <!-- MAIN CONTENT: HALAMAN NOTIFIKASI KHUSUS -->
+    <main class="main-content" id="view-notifications" style="display: none;">
+        <!-- Header Halaman -->
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-light-subtle" style="border-bottom-color: rgba(255,255,255,0.08) !important;">
+            <div>
+                <h4 class="fw-bold mb-1 text-white"><i class="bi bi-bell-fill text-warning me-2"></i>Riwayat Notifikasi</h4>
+                <p class="text-muted small mb-0">Daftar log aktivitas dan sistem monitoring secara keseluruhan</p>
+            </div>
+            <button class="btn btn-outline-info btn-sm fw-bold px-3 py-2" onclick="markAllAsReadPage(event)">
+                <i class="bi bi-check2-all me-1"></i> Tandai semua sudah dibaca
+            </button>
+        </div>
+
+        <!-- Wadah List Notifikasi -->
+        <div class="bg-white p-4 rounded-4 shadow" style="max-width: 800px; margin: 0 auto; background: rgba(255,255,255,0.02) !important; backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.08) !important;">
+            <div id="notifications-page-list" class="custom-scrollbar" style="max-height: 480px; overflow-y: auto; padding-right: 5px;">
+                <!-- Item notifikasi dimuat di sini -->
+            </div>
+        </div>
+
+        <!-- Footer / Credit Teks -->
+        <div class="text-center mt-5">
+            <p class="text-white-50 small mb-0 fw-semibold" style="font-size: 11px; opacity: 0.65; letter-spacing: 0.5px;">By Poltek Nuklir dan Vanguard Labs Team</p>
+        </div>
+    </main>
+
+    <!-- MAIN CONTENT: HALAMAN PANDUAN / DOKUMENTASI -->
+    <main class="main-content" id="view-help" style="display: none;">
+        <!-- Header Halaman -->
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-light-subtle" style="border-bottom-color: rgba(255,255,255,0.08) !important;">
+            <div>
+                <h4 class="fw-bold mb-1 text-white"><i class="bi bi-question-circle-fill text-info me-2"></i>Modul & Panduan Alat</h4>
+                <p class="text-muted small mb-0">Panduan teknis pengoperasian sistem monitoring Smart Chamber</p>
+            </div>
+        </div>
+
+        <!-- Wadah Panduan (Accordion Style) -->
+        <div class="p-4 rounded-4 shadow" style="max-width: 900px; margin: 0 auto; background: rgba(255,255,255,0.02) !important; backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.08) !important;">
+            <div class="accordion" id="helpAccordion">
+                
+                <!-- Item 1: Cara Kerja Alat -->
+                <div class="accordion-item mb-3" style="background: rgba(255,255,255,0.01) !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 12px; overflow: hidden;">
+                    <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button fw-bold text-white collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne" style="background: transparent !important; color: #ffffff !important; box-shadow: none;">
+                            <i class="bi bi-cpu text-info me-2"></i> 1. Cara Kerja Alat (Smart Chamber)
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#helpAccordion">
+                        <div class="accordion-body text-white-50" style="font-size: 13px; line-height: 1.6;">
+                            Smart Chamber bekerja dengan mengumpulkan data kondisi mikro dari dalam bilah tanah/tanaman padi secara real-time.
+                            <ul>
+                                <li><strong>Sensor DHT22/SHT31:</strong> Memantau Suhu (°C) dan Kelembapan (%) udara dalam sungkup.</li>
+                                <li><strong>Barometer BMP280:</strong> Mengukur Tekanan udara (hPa).</li>
+                                <li><strong>Sensor MQ-4:</strong> Mengukur konsentrasi gas Metana (ppm) yang dihasilkan tanah.</li>
+                                <li><strong>Mikrokontroler ESP32:</strong> Memproses data lokal dan mengirimkannya ke API server melalui koneksi WiFi.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 2: Cara Membaca Sensor -->
+                <div class="accordion-item mb-3" style="background: rgba(255,255,255,0.01) !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 12px; overflow: hidden;">
+                    <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button fw-bold text-white collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" style="background: transparent !important; color: #ffffff !important; box-shadow: none;">
+                            <i class="bi bi-activity text-info me-2"></i> 2. Cara Membaca Sensor & Grafik
+                        </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#helpAccordion">
+                        <div class="accordion-body text-white-50" style="font-size: 13px; line-height: 1.6;">
+                            Halaman Dashboard menampilkan rangkuman data sensor dalam bentuk kartu visual dan grafik interaktif.
+                            <ul>
+                                <li><strong>Warna Kartu Chamber:</strong>
+                                    <ul>
+                                        <li><span class="text-info fw-bold">Biru/Cyan (Normal):</span> Sensor berada di bawah batas ambang bahaya.</li>
+                                        <li><span class="text-danger fw-bold">Merah Berkedip (Bahaya):</span> Salah satu parameter sensor melebihi ambang batas aman yang diatur di menu Pengaturan.</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Grafik History:</strong> Menampilkan fluktuasi data sensor dalam rentang waktu tertentu. Anda dapat menyaring parameter yang ingin ditampilkan melalui tombol filter di atas grafik.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 3: Cara Mengatur Jadwal Otomatisasi -->
+                <div class="accordion-item mb-3" style="background: rgba(255,255,255,0.01) !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 12px; overflow: hidden;">
+                    <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button fw-bold text-white collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree" style="background: transparent !important; color: #ffffff !important; box-shadow: none;">
+                            <i class="bi bi-clock-history text-info me-2"></i> 3. Cara Mengatur Jadwal Otomatisasi
+                        </button>
+                    </h2>
+                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#helpAccordion">
+                        <div class="accordion-body text-white-50" style="font-size: 13px; line-height: 1.6;">
+                            Otomatisasi dikendalikan melalui menu editor jadwal di dalam Modal Detail Chamber.
+                            <ol>
+                                <li>Klik tombol <strong>Detail</strong> pada salah satu kartu chamber di dashboard utama.</li>
+                                <li>Masuk to tab <strong>Otomatis</strong> pada Panel Kontrol.</li>
+                                <li>Klik <strong>Buka Editor Jadwal</strong> untuk menambah atau menghapus jadwal eksekusi.</li>
+                                <li>Pilih perangkat (Kipas ON/OFF atau Syringe UP/DOWN) serta jam eksekusi, lalu klik tombol tambah (+).</li>
+                                <li>Klik <strong>Selesai (Done)</strong> untuk menyimpan. Jadwal aktif akan langsung terdaftar di panel kontrol otomatis.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Footer / Credit Teks -->
+        <div class="text-center mt-5">
+            <p class="text-white-50 small mb-0 fw-semibold" style="font-size: 11px; opacity: 0.65; letter-spacing: 0.5px;">By Poltek Nuklir dan Vanguard Labs Team</p>
+        </div>
+    </main>
+
     <!-- MODAL KELOLA USER (MASTER ADMIN) -->
     <div class="modal fade" id="modalKelolaUser" tabindex="-1">
       <div class="modal-dialog modal-lg">
@@ -436,7 +560,7 @@
           <div class="modal-body">
             <div class="table-responsive">
                 <table class="table table-hover align-middle" style="font-size: 13px;">
-                    <thead class="table-light">
+                    <thead>
                         <tr>
                             <th>ID</th>
                             <th>Username</th>

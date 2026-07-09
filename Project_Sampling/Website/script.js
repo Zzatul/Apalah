@@ -42,16 +42,20 @@ window.onload = function() {
             document.getElementById("active-users-count").innerText = "-";
         });
 
-    // Sembunyikan kontrol yang bukan hak User biasa
-    if (userRole === "user") {
-        const opControls = document.getElementById("operator-controls");
-        if (opControls) opControls.style.display = "none";
-        
-        // Sembunyikan ikon settings dari sidebar
-        const navSettings = document.getElementById("nav-settings");
-        if (navSettings) navSettings.style.display = "none";
+    // Inisialisasi Sistem Notifikasi
+    loadNotifications();
+    if (!sessionStorage.getItem('login_notified')) {
+        addNotification(`Sesi login berhasil dimulai sebagai ${username}`, "bi-shield-check");
+        sessionStorage.setItem('login_notified', 'true');
     }
 
+    // Sembunyikan kontrol yang bukan hak User biasa / Tamu
+    if (userRole === "user" || userRole === "tamu" || userRole === "guest") {
+        const opControls = document.getElementById("operator-controls");
+        if (opControls) opControls.style.display = "none";
+    }
+
+    applyRBACSettings();
     initChart();
     load();
     fetchWeather();
@@ -80,15 +84,30 @@ window.onload = function() {
     }
 }
 
+// Fungsi Pembatasan Akses Halaman Pengaturan (RBAC)
+function applyRBACSettings() {
+    const role = localStorage.getItem('role') || sessionStorage.getItem('role') || userRole;
+    if (role === 'user' || role === 'tamu' || role === 'guest') {
+        const tampilanSetting = document.getElementById('tampilan-setting');
+        const thresholdSetting = document.getElementById('threshold-setting');
+        if (tampilanSetting) tampilanSetting.style.display = 'none';
+        if (thresholdSetting) thresholdSetting.style.display = 'none';
+    }
+}
+
 // Fungsi Navigasi Sidebar
 function switchView(viewName) {
     // Sembunyikan semua halaman (main)
     document.getElementById("view-dashboard").style.display = "none";
     document.getElementById("view-settings").style.display = "none";
+    if (document.getElementById("view-notifications")) document.getElementById("view-notifications").style.display = "none";
+    if (document.getElementById("view-help")) document.getElementById("view-help").style.display = "none";
     
     // Matikan efek aktif di semua ikon navigasi
     document.getElementById("nav-dashboard").classList.remove("active");
     if(document.getElementById("nav-settings")) document.getElementById("nav-settings").classList.remove("active");
+    if(document.getElementById("btn-notification")) document.getElementById("btn-notification").classList.remove("active");
+    if(document.getElementById("btn-help")) document.getElementById("btn-help").classList.remove("active");
 
     // Nyalakan yang dipilih
     if (viewName === 'dashboard') {
@@ -111,6 +130,17 @@ function switchView(viewName) {
         if(userRole === 'master_admin') {
             fetchServerHealth();
         }
+    } else if (viewName === 'notifications') {
+        if (document.getElementById("view-notifications")) document.getElementById("view-notifications").style.display = "block";
+        if (document.getElementById("btn-notification")) document.getElementById("btn-notification").classList.add("active");
+        
+        // Tandai sudah dibaca secara diam-diam dan render halaman notifikasi
+        markAllAsReadSilent();
+        renderNotificationsPage();
+    } else if (viewName === 'help') {
+        if (document.getElementById("view-help")) document.getElementById("view-help").style.display = "block";
+        if (document.getElementById("btn-help")) document.getElementById("btn-help").classList.add("add"); // bootstrap active class compatibility
+        if (document.getElementById("btn-help")) document.getElementById("btn-help").classList.add("active");
     }
 }
 
@@ -307,7 +337,7 @@ async function bukaDetail(chamberId) {
             // Render dari bawah agar grafik dari kiri ke kanan (Waktu terlama -> terbaru)
             const reversedData = [...jsonHistory.data].reverse();
             reversedData.forEach(d => {
-                const time = new Date(d.created_at).toLocaleTimeString();
+                const time = new Date(d.waktu_masuk).toLocaleTimeString();
                 labels.push(time);
                 suhuData.push(d.suhu);
                 humData.push(d.kelembaban);
@@ -344,6 +374,16 @@ async function bukaDetail(chamberId) {
                     maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false } // Sembunyikan legend bawaan, pakai dropdown
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.08)' },
+                            ticks: { color: 'rgba(255, 255, 255, 0.6)' }
+                        },
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.08)' },
+                            ticks: { color: 'rgba(255, 255, 255, 0.6)' }
+                        }
                     }
                 }
             });
@@ -360,6 +400,44 @@ async function bukaDetail(chamberId) {
 // ==========================================
 // LOGIKA JADWAL OTOMATIS
 // ==========================================
+let activeSchedules = []; // State untuk menghubungkan data jadwal
+
+function updateParentScheduleView() {
+    const descEl = document.getElementById("otomatis-deskripsi");
+    const listContainer = document.getElementById("otomatis-list-container");
+    
+    if (!descEl || !listContainer) return;
+    
+    if (activeSchedules && activeSchedules.length > 0) {
+        // Sembunyikan deskripsi default, tampilkan list
+        descEl.style.display = "none";
+        listContainer.style.display = "block";
+        
+        let htmlList = "";
+        activeSchedules.forEach(item => {
+            let displayValue = item.command_value;
+            if (item.command_name.toLowerCase() === 'kipas') {
+                displayValue = item.command_value == '1' ? 'ON' : 'OFF';
+            } else if (item.command_name.toLowerCase() === 'syringe') {
+                displayValue = item.command_value === 'U' ? 'UP' : 'DOWN';
+            }
+            
+            htmlList += `
+                <div class="d-flex justify-content-between align-items-center p-2 mb-1 rounded border" style="background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.06) !important; font-size: 11px;">
+                    <span class="text-white-50"><i class="bi bi-gear-fill me-1"></i> ${item.command_name.toUpperCase()} ${displayValue}</span>
+                    <span class="fw-bold text-info"><i class="bi bi-clock me-1"></i> ${item.scheduled_time}</span>
+                </div>
+            `;
+        });
+        listContainer.innerHTML = htmlList;
+    } else {
+        // Tampilkan deskripsi default, sembunyikan list
+        descEl.style.display = "block";
+        listContainer.style.display = "none";
+        listContainer.innerHTML = "";
+    }
+}
+
 async function loadJadwal() {
     if (!currentDetailChamber || userRole === "user") return;
     try {
@@ -367,9 +445,15 @@ async function loadJadwal() {
         const json = await res.json();
         const tbody = document.getElementById("list-jadwal");
         
-        if (json.status === "berhasil" && json.data.length > 0) {
+        if (json.status === "berhasil") {
+            activeSchedules = json.data;
+        } else {
+            activeSchedules = [];
+        }
+        
+        if (activeSchedules.length > 0) {
             let html = "";
-            json.data.forEach(item => {
+            activeSchedules.forEach(item => {
                 let displayValue = item.command_value;
                 if (item.command_name.toLowerCase() === 'kipas') {
                     displayValue = item.command_value == '1' ? 'ON' : 'OFF';
@@ -387,6 +471,9 @@ async function loadJadwal() {
         } else {
             tbody.innerHTML = `<tr><td colspan="3">Tidak ada jadwal</td></tr>`;
         }
+        
+        // Sinkronkan tampilan jadwal di panel kontrol induk
+        updateParentScheduleView();
     } catch(e) {
         console.error("Gagal meload jadwal", e);
     }
@@ -411,7 +498,11 @@ async function tambahJadwal(event) {
             })
         });
         const json = await res.json();
-        if(json.status === "berhasil") loadJadwal();
+        if(json.status === "berhasil") {
+            const actionDisplay = alatVal[0].toUpperCase() + ' ' + (alatVal[0].toLowerCase() === 'kipas' ? (alatVal[1] === '1' ? 'ON' : 'OFF') : (alatVal[1] === 'U' ? 'UP' : 'DOWN'));
+            addNotification(`Jadwal baru ${actionDisplay} (${timeVal}) ditambahkan untuk ${currentDetailChamber}`, "bi-calendar-plus");
+            loadJadwal();
+        }
         else alert(json.pesan);
     } catch (error) {
         alert("Gagal menyimpan jadwal.");
@@ -422,7 +513,18 @@ async function hapusJadwal(id) {
     if(userRole === "user") return;
     if(!confirm("Hapus jadwal ini?")) return;
     try {
+        const scheduleItem = activeSchedules.find(item => item.id == id);
         await fetch(`http://localhost:3000/api/schedules/${id}`, { method: 'DELETE' });
+        
+        if (scheduleItem) {
+            let valDisplay = scheduleItem.command_value;
+            if (scheduleItem.command_name.toLowerCase() === 'kipas') valDisplay = valDisplay === '1' ? 'ON' : 'OFF';
+            else valDisplay = valDisplay === 'U' ? 'UP' : 'DOWN';
+            addNotification(`Jadwal ${scheduleItem.command_name.toUpperCase()} ${valDisplay} (${scheduleItem.scheduled_time}) dihapus dari ${currentDetailChamber}`, "bi-calendar-minus");
+        } else {
+            addNotification(`Jadwal #${id} dihapus dari ${currentDetailChamber}`, "bi-calendar-minus");
+        }
+        
         loadJadwal();
     } catch (error) {
         alert("Gagal menghapus jadwal.");
@@ -523,7 +625,15 @@ function initChart() {
                 legend: { display: false }
             },
             scales: {
-                y: { beginAtZero: false }
+                x: {
+                    grid: { color: 'rgba(255, 255, 255, 0.08)' },
+                    ticks: { color: 'rgba(255, 255, 255, 0.6)' }
+                },
+                y: {
+                    beginAtZero: false,
+                    grid: { color: 'rgba(255, 255, 255, 0.08)' },
+                    ticks: { color: 'rgba(255, 255, 255, 0.6)' }
+                }
             }
         }
     });
@@ -713,6 +823,9 @@ async function toggleKipas(chamberId, safeId, isChecked, toggleElement) {
             const cardSwitch = document.getElementById(`kipas-${safe}`);
             if (cardSwitch) cardSwitch.checked = isChecked;
         }
+        
+        // Tambahkan notifikasi aktivitas
+        addNotification(`Kipas ${chamberId} diubah menjadi ${isChecked ? 'ON' : 'OFF'}`, "bi-power");
     } catch (error) {
         alert("Gagal menyalakan/mematikan kipas. Pastikan koneksi server aktif.");
         if(toggleElement) toggleElement.checked = !isChecked;
@@ -731,6 +844,9 @@ async function moveSyringe(chamberId, direction) {
         const payload = [{ chamber_id: chamberId, command_name: "Syringe", command_value: direction }];
         const res = await fetch('http://localhost:3000/api/commands', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
         if (!res.ok) throw new Error("Server error");
+        
+        // Tambahkan notifikasi aktivitas
+        addNotification(`Syringe ${chamberId} digerakkan (${direction === 'U' ? 'UP' : 'DOWN'})`, "bi-arrow-down-up");
     } catch (error) {
         alert("Gagal menggerakkan syringe. Pastikan koneksi server aktif.");
     }
@@ -852,7 +968,7 @@ async function exportDataCSV() {
         
         data.forEach(row => {
             // Format Waktu ke Lokal (YYYY-MM-DD HH:mm:ss)
-            const dateObj = new Date(row.created_at);
+            const dateObj = new Date(row.waktu_masuk);
             const formattedDate = dateObj.getFullYear() + "-" + 
                 String(dateObj.getMonth() + 1).padStart(2, '0') + "-" + 
                 String(dateObj.getDate()).padStart(2, '0') + " " + 
@@ -879,6 +995,15 @@ async function exportDataCSV() {
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(urlBlob);
+
+        // Injeksi Notifikasi Riwayat Aktivitas Pengunduhan CSV
+        let roleDisplay = "User";
+        if (userRole === "master_admin") roleDisplay = "Master Admin";
+        else if (userRole === "operator") roleDisplay = "Operator";
+        else if (userRole === "tamu" || userRole === "guest") roleDisplay = "Tamu";
+        
+        const chamberLabel = chamber === "all" ? "Semua Chamber" : chamber;
+        addNotification(`Data CSV (${chamberLabel}) berhasil diunduh oleh ${username} (${roleDisplay})`, "bi-file-earmark-arrow-down");
     } catch (e) {
         alert('Gagal mengambil data untuk export CSV');
     } finally {
@@ -948,9 +1073,6 @@ if (userRole !== 'master_admin') {
     if(document.getElementById('databaseMaintenanceCard')) document.getElementById('databaseMaintenanceCard').style.display = 'none';
     if(document.getElementById('serverHealthCard')) document.getElementById('serverHealthCard').style.display = 'none';
 }
-if (userRole === 'user') {
-    if(document.getElementById('exportDataCard')) document.getElementById('exportDataCard').style.display = 'none';
-}
 
 // --- DARK MODE LOGIC ---
 function toggleDarkMode() {
@@ -1006,6 +1128,9 @@ function saveThresholds(showPopup = true) {
         document.querySelectorAll('.chamber-node.alert-glow').forEach(el => el.classList.remove('alert-glow'));
     }
     
+    // Tambahkan notifikasi aktivitas
+    addNotification("Pengaturan ambang batas bahaya sensor diperbarui", "bi-sliders");
+    
     if (showPopup) {
         alert("Pengaturan Ambang Batas berhasil disimpan!");
     }
@@ -1031,4 +1156,145 @@ function checkThresholds(chamberId, data) {
     } else {
         card.classList.remove('alert-glow');
     }
+}
+
+// ==========================================
+// SISTEM NOTIFIKASI AKTIVITAS
+// ==========================================
+let notifications = [];
+
+function loadNotifications() {
+    try {
+        const stored = localStorage.getItem('user_notifications');
+        if (stored) {
+            notifications = JSON.parse(stored);
+        } else {
+            // Notifikasi awal default
+            notifications = [
+                { id: 1, text: "Sistem IoT Smart Chamber berhasil diinisialisasi.", time: new Date(Date.now() - 3600000).toISOString(), icon: "bi-info-circle", read: false },
+                { id: 2, text: "Koneksi ke database server aktif.", time: new Date(Date.now() - 1800000).toISOString(), icon: "bi-database-check", read: false }
+            ];
+            localStorage.setItem('user_notifications', JSON.stringify(notifications));
+        }
+        renderNotifications();
+    } catch(e) {
+        console.error("Gagal memuat notifikasi", e);
+    }
+}
+
+function addNotification(text, iconClass) {
+    const newNotif = {
+        id: Date.now(),
+        text: text,
+        time: new Date().toISOString(),
+        icon: iconClass || "bi-info-circle",
+        read: false
+    };
+    notifications.unshift(newNotif);
+    if (notifications.length > 30) notifications.pop();
+    localStorage.setItem('user_notifications', JSON.stringify(notifications));
+    renderNotifications();
+    
+    // Live update jika user sedang membuka halaman notifikasi
+    const viewNotif = document.getElementById("view-notifications");
+    if (viewNotif && viewNotif.style.display === "block") {
+        renderNotificationsPage();
+    }
+}
+
+function formatTimeAgo(isoString) {
+    const diffMs = Date.now() - new Date(isoString).getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    
+    if (diffMins < 1) return "Baru saja";
+    if (diffMins < 60) return `${diffMins} menit yang lalu`;
+    if (diffHours < 24) return `${diffHours} jam yang lalu`;
+    
+    return new Date(isoString).toLocaleDateString('id-ID', { hour: '2-digit', minute: '2-digit' });
+}
+
+function renderNotifications() {
+    const badgeEl = document.getElementById("notif-badge");
+    const unreadCount = notifications.filter(n => !n.read).length;
+    
+    if (badgeEl) {
+        badgeEl.style.display = unreadCount > 0 ? "block" : "none";
+    }
+    
+    const listEl = document.getElementById("notification-list");
+    if (!listEl) return;
+    
+    if (notifications.length === 0) {
+        listEl.innerHTML = `<div class="text-center py-4 text-muted small">Tidak ada notifikasi</div>`;
+        return;
+    }
+    
+    let html = "";
+    notifications.forEach(n => {
+        const itemClass = n.read ? "" : "border-start border-3 border-info";
+        const bgClass = n.read ? "rgba(255,255,255,0.01)" : "rgba(255,255,255,0.04)";
+        
+        html += `
+            <div class="p-2 mb-2 rounded d-flex align-items-start gap-2 ${itemClass}" style="background: ${bgClass}; font-size: 12px; transition: all 0.2s ease;">
+                <div class="p-1 rounded d-flex align-items-center justify-content-center" style="font-size: 14px; width: 26px; height: 26px; background-color: rgba(255,255,255,0.05) !important;">
+                    <i class="bi ${n.icon} text-info"></i>
+                </div>
+                <div class="flex-grow-1" style="min-width: 0;">
+                    <p class="mb-0 text-white" style="word-wrap: break-word; line-height: 1.3;">${n.text}</p>
+                    <span class="text-muted" style="font-size: 10px; opacity: 0.6;">${formatTimeAgo(n.time)}</span>
+                </div>
+            </div>
+        `;
+    });
+    listEl.innerHTML = html;
+}
+
+function markAllAsReadSilent() {
+    notifications.forEach(n => n.read = true);
+    localStorage.setItem('user_notifications', JSON.stringify(notifications));
+    renderNotifications();
+}
+
+function renderNotificationsPage() {
+    const listPageEl = document.getElementById("notifications-page-list");
+    if (!listPageEl) return;
+    
+    if (notifications.length === 0) {
+        listPageEl.innerHTML = `
+            <div class="text-center py-5">
+                <i class="bi bi-bell-slash text-muted" style="font-size: 40px; opacity: 0.4;"></i>
+                <p class="text-muted mt-3 mb-0">Tidak ada riwayat notifikasi atau aktivitas.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = "";
+    notifications.forEach(n => {
+        const itemClass = n.read ? "" : "border-start border-3 border-info";
+        const bgClass = n.read ? "rgba(255,255,255,0.01)" : "rgba(255,255,255,0.03)";
+        
+        html += `
+            <div class="p-3 mb-2 rounded d-flex align-items-center gap-3 ${itemClass}" style="background: ${bgClass}; transition: all 0.2s ease; border: 1px solid rgba(255,255,255,0.02);">
+                <div class="p-2 rounded d-flex align-items-center justify-content-center" style="font-size: 18px; width: 36px; height: 36px; background-color: rgba(255,255,255,0.05) !important;">
+                    <i class="bi ${n.icon} text-info"></i>
+                </div>
+                <div class="flex-grow-1" style="min-width: 0;">
+                    <h6 class="mb-1 text-white" style="font-size: 13px; font-weight: 600; line-height: 1.4;">${n.text}</h6>
+                    <span class="text-muted small" style="font-size: 10px; opacity: 0.6;"><i class="bi bi-clock me-1"></i>${formatTimeAgo(n.time)}</span>
+                </div>
+            </div>
+        `;
+    });
+    listPageEl.innerHTML = html;
+}
+
+function markAllAsReadPage(e) {
+    if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    markAllAsReadSilent();
+    renderNotificationsPage();
 }

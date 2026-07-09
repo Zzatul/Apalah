@@ -201,11 +201,11 @@ app.get('/api/export', (req, res) => {
         params.push(chamber);
     }
     if (start) {
-        query += " AND DATE(created_at) >= ?";
+        query += " AND DATE(waktu_masuk) >= ?";
         params.push(start);
     }
     if (end) {
-        query += " AND DATE(created_at) <= ?";
+        query += " AND DATE(waktu_masuk) <= ?";
         params.push(end);
     }
     
@@ -296,7 +296,7 @@ app.get('/api/system/health', (req, res) => {
 
 app.delete('/api/database/clean', (req, res) => {
     const days = parseInt(req.query.days) || 30;
-    db.query(`DELETE FROM sensor_data WHERE created_at < NOW() - INTERVAL ${days} DAY`, (err, results) => {
+    db.query(`DELETE FROM sensor_data WHERE waktu_masuk < NOW() - INTERVAL ${days} DAY`, (err, results) => {
         if (err) return res.status(500).json({ status: "gagal", pesan: err.message });
         res.json({ status: "berhasil", pesan: `${results.affectedRows} baris data usang berhasil dihapus.` });
     });
@@ -325,7 +325,7 @@ app.post('/api/data', (req, res) => {
     db.query(upsertDevice, [device]);
 
     // 2. Simpan Data Sensor
-    const insertDataQuery = 'INSERT INTO sensor_data (nama_device, nama_sensor, suhu, kelembaban, tekanan, gas_metana, syringe_present) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    const insertDataQuery = 'INSERT INTO sensor_data (nama_device, nama_sensor, suhu, kelembaban, tekanan, gas_metana, syringe_present, waktu_masuk) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())';
     
     db.query(insertDataQuery, [device, 'sensor_rata_rata', suhu, kelembaban, tekanan, gas_metana, syringe_present || 0], (err, results) => {
         if (err) {

@@ -18,60 +18,158 @@ body {
 }
 
 .login-body {
-    background: url('tech-bg-blue.jpg') no-repeat center center fixed;
-    background-size: cover;
+    background: radial-gradient(circle at 15% 20%, rgba(13, 110, 253, 0.25) 0%, transparent 45%),
+                radial-gradient(circle at 85% 80%, rgba(13, 202, 240, 0.2) 0%, transparent 45%),
+                linear-gradient(135deg, #070d19 0%, #02040a 100%);
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.login-container { width: 100%; max-width: 450px; padding: 20px; }
-.login-card {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 30px;
-    padding: 40px;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    color: #ffffff;
-}
-
-.login-card .input-group {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.02) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.1), 0 2px 4px rgba(0, 0, 0, 0.05);
-    border-radius: 12px;
     overflow: hidden;
+    position: relative;
 }
-.login-card .form-control, .login-card .input-group-text {
-    background: transparent;
+
+.login-container { 
+    width: 100%; 
+    max-width: 440px; 
+    padding: 20px; 
+    position: relative;
+    z-index: 2;
+}
+
+.login-card {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.5), 
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 35px 70px rgba(0,0,0,0.6), 
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Styling inputs, input-groups dan buttons di halaman login */
+.login-card .input-group {
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    transition: all 0.3s ease;
+}
+
+.login-card .input-group:focus-within {
+    border-color: rgba(13, 202, 240, 0.6);
+    box-shadow: 0 0 15px rgba(13, 202, 240, 0.25);
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.login-card .input-group-text {
     border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 18px;
+    padding-left: 15px;
+    padding-right: 10px;
+}
+
+.login-card .form-control {
+    border: none;
+    background: transparent;
+    color: #ffffff;
+    padding: 11px 15px 11px 5px;
+    font-size: 14px;
+}
+
+.login-card .form-control:focus {
+    box-shadow: none;
+    background: transparent;
     color: #ffffff;
 }
-.login-card .form-control:focus {
-    background: rgba(255, 255, 255, 0.05);
-    color: #fff;
-    box-shadow: none;
-}
+
 .login-card .form-control::placeholder {
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(255, 255, 255, 0.35);
 }
-.login-card .btn-primary {
-    background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 15px;
-    color: #fff;
+
+.login-card .form-label {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
 }
-.login-card .btn-primary:hover {
-    background: rgba(255, 255, 255, 0.35);
+
+.login-card .btn-brin {
+    background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    padding: 12px;
+    color: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 20px rgba(13, 110, 253, 0.25);
+}
+
+.login-card .btn-brin:hover {
+    background: linear-gradient(135deg, #0b5ed7 0%, #0a58ca 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(13, 110, 253, 0.35);
+}
+
+.login-card .btn-brin:active {
+    transform: translateY(0);
+}
+
+.login-card .btn-success {
+    background: linear-gradient(135deg, #198754 0%, #157347 100%);
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    padding: 12px;
+    box-shadow: 0 8px 20px rgba(25, 135, 84, 0.25);
+}
+
+.login-card .btn-success:hover {
+    background: linear-gradient(135deg, #157347 0%, #13653f 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(25, 135, 84, 0.35);
+}
+
+.login-card a {
+    color: rgba(13, 202, 240, 0.8) !important;
+    transition: all 0.2s ease;
+    font-weight: 600;
+}
+
+.login-card a:hover {
+    color: #0dcaf0 !important;
+    text-shadow: 0 0 10px rgba(13, 202, 240, 0.4);
+}
+
+.login-card .text-muted {
+    color: rgba(255, 255, 255, 0.55) !important;
+}
+
+.login-card .alert {
+    border-radius: 12px;
+    border: 1px solid rgba(220, 53, 69, 0.2);
+    background: rgba(220, 53, 69, 0.1);
+    color: #f8d7da;
+    backdrop-filter: blur(10px);
 }
 
 /* DASHBOARD GLASSMORPHISM */
 .glass-body {
-    background: var(--bg-grad);
+    background: radial-gradient(circle at 10% 20%, rgba(13, 110, 253, 0.15) 0%, transparent 45%),
+                radial-gradient(circle at 90% 80%, rgba(13, 202, 240, 0.12) 0%, transparent 45%),
+                linear-gradient(135deg, #070d19 0%, #02040a 100%);
     height: 100vh;
     overflow: hidden;
     display: flex;
@@ -79,32 +177,33 @@ body {
 
 /* SIDEBAR KIRI */
 .sidebar-pill {
-    width: 65px;
-    margin: 20px;
-    background: var(--panel-bg);
-    border: 1px solid var(--panel-border);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    width: 80px;
+    margin: 20px 15px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
     border-radius: 35px;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 20px 0;
-    box-shadow: var(--shadow);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
 
 .logo-icon {
     font-size: 24px;
-    color: var(--brin-blue);
+    color: #0dcaf0;
     margin-bottom: 30px;
+    filter: drop-shadow(0 0 8px rgba(13, 202, 240, 0.4));
 }
 
 .sidebar-pill a {
-    color: #64748b;
+    color: rgba(255, 255, 255, 0.55);
     font-size: 20px;
     margin: 15px 0;
     text-decoration: none;
-    transition: 0.3s;
+    transition: all 0.3s ease;
     width: 40px;
     height: 40px;
     display: flex;
@@ -114,9 +213,9 @@ body {
 }
 
 .sidebar-pill a.active, .sidebar-pill a:hover {
-    background: white;
-    color: var(--brin-blue);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    background: rgba(255, 255, 255, 0.06);
+    color: #0dcaf0;
+    box-shadow: 0 0 12px rgba(13, 202, 240, 0.3);
 }
 
 .spacer { flex-grow: 1; }
@@ -148,9 +247,10 @@ body {
 }
 
 .pill {
-    background: var(--panel-bg);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--panel-border);
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     padding: 8px 18px;
     border-radius: 25px;
     font-size: 13px;
@@ -158,8 +258,8 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
-    box-shadow: var(--shadow);
-    color: var(--text-main);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    color: rgba(255, 255, 255, 0.9);
 }
 
 .pill-controls {
@@ -167,9 +267,9 @@ body {
 }
 
 .pill-dark {
-    background: #1e293b;
+    background: rgba(255, 255, 255, 0.08);
     color: white;
-    border: none;
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 .pill-dark i { color: white; }
 
@@ -178,37 +278,57 @@ body {
     background: transparent;
     cursor: pointer;
     font-size: 16px;
-    color: var(--text-main);
+    color: white;
     padding: 5px;
     border-radius: 50%;
     transition: 0.2s;
 }
-.btn-icon:hover { background: rgba(0,0,0,0.05); }
+.btn-icon:hover { background: rgba(255, 255, 255, 0.1); }
 
-/* WORKSPACE (CHAMBER NODES) */
-.workspace {
-    flex-grow: 1;
+/* AREA KONTEN UTAMA DASHBOARD */
+.dashboard-content {
     display: flex;
-    gap: 20px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding: 10px 10px 20px 10px;
-    align-items: center;
+    flex-direction: column;
+    flex-grow: 1;
+    min-height: 83vh;
+    gap: 30px;
+    padding-bottom: 10px;
+}
+
+/* WORKSPACE (CHAMBER NODES - FLEX LAYOUT) */
+.workspace {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 30px;
+    padding: 15px 10px;
+    justify-content: flex-start; /* Rata kiri horizontal */
+    align-content: flex-start; /* Rata atas vertikal */
 }
 
 /* KARTU CHAMBER */
 .chamber-node {
-    flex: 0 0 auto;
-    min-width: 280px;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(10px);
-    border: 1px solid white;
-    border-radius: 16px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    width: 320px;
+    min-width: 320px;
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    transition: transform 0.3s;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    color: #ffffff;
+}
+
+.chamber-node:hover {
+    transform: translateY(-5px);
+    border-color: rgba(13, 202, 240, 0.3);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45),
+                0 0 15px rgba(13, 202, 240, 0.1);
 }
 
 /* Custom Scrollbar for Horizontal Card Deck */
@@ -219,67 +339,71 @@ body {
     padding-bottom: 10px;
 }
 .custom-scrollbar::-webkit-scrollbar {
-    height: 8px;
+    height: 6px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 10px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.15);
     border-radius: 10px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(255, 255, 255, 0.3);
 }
 
 .node-header {
-    background: #ffffff;
-    border-radius: 16px 16px 0 0;
-    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.01);
+    border-radius: 20px 20px 0 0;
+    padding: 12px 15px;
     display: flex;
     align-items: center;
     gap: 10px;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .node-icon {
-    background: var(--brin-blue);
+    background: linear-gradient(135deg, #0d6efd 0%, #0dcaf0 100%);
     color: white;
-    width: 24px;
-    height: 24px;
-    border-radius: 6px;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
+    font-size: 14px;
+    box-shadow: 0 4px 10px rgba(13, 110, 253, 0.25);
 }
 
 .node-title {
-    font-weight: bold;
+    font-weight: 700;
     flex-grow: 1;
-    font-size: 13px;
+    font-size: 14px;
+    letter-spacing: 0.5px;
 }
 
 .node-body {
-    padding: 12px;
+    padding: 15px;
 }
 
 .sensor-row {
     display: flex;
     justify-content: space-between;
-    font-size: 11px;
-    margin-bottom: 6px;
-    color: #64748b;
+    font-size: 12px;
+    margin-bottom: 8px;
+    color: rgba(255, 255, 255, 0.65);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    padding-bottom: 6px;
 }
 
-.sensor-row b { color: var(--text-main); font-size: 12px;}
+.sensor-row b { color: #ffffff; font-size: 13px;}
 
 /* KONTROL PANEL MINI */
 .control-section {
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px dashed #cbd5e1;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
 }
 
 .ctrl-row {
@@ -303,7 +427,7 @@ body {
     position: absolute;
     cursor: pointer;
     top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #ccc;
+    background-color: rgba(255,255,255,0.15);
     transition: .4s;
     border-radius: 34px;
 }
@@ -316,7 +440,7 @@ body {
     transition: .4s;
     border-radius: 50%;
 }
-input:checked + .slider-mini { background-color: var(--brin-blue); }
+input:checked + .slider-mini { background-color: #0d6efd; }
 input:checked + .slider-mini:before { transform: translateX(14px); }
 
 /* TOMBOL SYRINGE MINI */
@@ -326,61 +450,157 @@ input:checked + .slider-mini:before { transform: translateX(14px); }
 }
 .btn-group-tiny button {
     border: none;
-    background: #e2e8f0;
+    background: rgba(255, 255, 255, 0.08);
     font-size: 10px;
     font-weight: bold;
     padding: 4px 8px;
     border-radius: 4px;
     cursor: pointer;
-    color: #475569;
+    color: rgba(255,255,255,0.8);
+    transition: all 0.2s ease;
 }
 .btn-group-tiny button:not(:disabled):hover {
-    background: var(--brin-blue);
+    background: #0d6efd;
     color: white;
 }
-.btn-group-tiny button:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-group-tiny button:disabled { opacity: 0.3; cursor: not-allowed; }
 
 /* BOTTOM PANEL */
 .bottom-panel {
-    height: 210px;
-    background: var(--panel-bg);
-    backdrop-filter: blur(15px);
-    border: 1px solid var(--panel-border);
+    height: 230px;
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 25px;
-    box-shadow: var(--shadow);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
     display: flex;
-    padding: 15px 20px;
+    padding: 20px;
     gap: 20px;
+    margin-top: 30px; /* Jarak statis di bawah kumpulan kartu */
 }
 .panel-half {
     flex: 1;
     display: flex;
     flex-direction: column;
 }
-.panel-half h6 { font-weight: bold; font-size: 14px; color: var(--text-main); margin-bottom: 10px; }
+.panel-half h6 { font-weight: 700; font-size: 15px; color: #ffffff; margin-bottom: 12px; letter-spacing: 0.5px; }
 
-/* DARK MODE */
-body.dark-mode {
-    background: #121212;
-    --text-main: #e0e0e0;
-    --text-muted: #aaaaaa;
-    --panel-bg: rgba(30, 30, 30, 0.85);
-    --panel-border: rgba(255, 255, 255, 0.1);
+/* OVERRIDES UNTUK GLOBAL DARK GLASSMORPHISM */
+.bg-white {
+    background: rgba(255, 255, 255, 0.02) !important;
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2) !important;
 }
-body.dark-mode .bg-white {
-    background-color: #1e1e1e !important;
+
+.text-dark {
+    color: #ffffff !important;
 }
-body.dark-mode .text-dark {
-    color: #e0e0e0 !important;
+
+.main-content .form-control,
+.main-content .form-select,
+.modal-content .form-control,
+.modal-content .form-select {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+    border-radius: 10px;
+    transition: all 0.3s ease;
 }
-body.dark-mode .table {
-    --bs-table-bg: transparent;
-    --bs-table-color: #e0e0e0;
+
+.main-content .form-control:focus,
+.main-content .form-select:focus,
+.modal-content .form-control:focus,
+.modal-content .form-select:focus {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(13, 202, 240, 0.6) !important;
+    box-shadow: 0 0 10px rgba(13, 202, 240, 0.25) !important;
 }
-body.dark-mode .pill {
-    background: #2a2a2a;
-    color: #fff;
-    border-color: #444;
+
+.main-content select option,
+.modal-content select option {
+    background-color: #090e1a;
+    color: #ffffff;
+}
+
+.table {
+    color: #ffffff !important;
+    --bs-table-bg: transparent !important;
+    --bs-table-hover-bg: rgba(255, 255, 255, 0.05) !important;
+    border-collapse: collapse;
+}
+
+.table th, .table td {
+    color: #ffffff !important;
+}
+
+.table thead th {
+    color: rgba(255, 255, 255, 0.65) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background-color: rgba(255, 255, 255, 0.02) !important;
+    font-weight: 600;
+}
+
+.table tbody td {
+    color: rgba(255, 255, 255, 0.85) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
+    background-color: transparent !important;
+}
+
+/* Sticky top header support untuk tabel scrollable */
+.table thead.sticky-top th {
+    position: sticky !important;
+    top: 0 !important;
+    background-color: #0c1424 !important; /* Warna gelap solid agar teks di bawahnya tertutup saat di-scroll */
+    z-index: 10 !important;
+    box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Modal styling */
+.modal-content {
+    background: rgba(9, 14, 26, 0.85) !important;
+    backdrop-filter: blur(35px);
+    -webkit-backdrop-filter: blur(35px);
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 24px !important;
+    color: #ffffff !important;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.6) !important;
+}
+
+.modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.modal-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.modal-title {
+    color: #ffffff !important;
+}
+
+.btn-close {
+    filter: invert(1) !important;
+}
+
+/* Ganti warna text-muted di dark glass */
+.text-muted {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Nav pills di modal detail */
+.nav-pills .nav-link {
+    color: rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.nav-pills .nav-link.active {
+    background-color: #0d6efd !important;
+    color: #ffffff !important;
 }
 
 /* ALERT GLOW ANIMATION */
@@ -392,4 +612,59 @@ body.dark-mode .pill {
 .alert-glow {
     animation: pulse-danger 2s infinite;
     border: 2px solid #dc3545 !important;
+}
+
+/* OVERRIDES UNTUK BG-LIGHT, BORDERS, DAN DROPDOWNS */
+.bg-light {
+    background-color: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+}
+
+.border {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dropdown-menu {
+    background: rgba(9, 14, 26, 0.95) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4) !important;
+}
+
+.dropdown-item {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+}
+
+/* NOTIFICATION PANEL POP-OVER */
+.notification-popover {
+    background: rgba(9, 14, 26, 0.95) !important;
+    backdrop-filter: blur(35px) !important;
+    -webkit-backdrop-filter: blur(35px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5) !important;
+    color: #ffffff !important;
+    text-align: left;
+}
+
+/* ACCORDION OVERRIDES FOR DARK THEME */
+.accordion-button::after {
+    filter: invert(1) !important; /* Make collapse arrow white */
+}
+.accordion-button:not(.collapsed) {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    color: #0dcaf0 !important;
+    box-shadow: none !important;
+}
+.accordion-button:focus {
+    box-shadow: none !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
 }
