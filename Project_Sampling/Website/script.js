@@ -227,7 +227,7 @@ async function prosesTambahChamber() {
         
         if (json.status === "berhasil") {
             const found = json.data.find(d => d.chamber_id === chamberId);
-            if (found) {
+            if (found && found.status === 'Online') {
                 if (!activeChambers.includes(chamberId)) {
                     activeChambers.push(chamberId);
                     localStorage.setItem('savedChambers', JSON.stringify(activeChambers));
@@ -237,8 +237,10 @@ async function prosesTambahChamber() {
                 } else {
                     alert("Chamber tersebut sudah tampil di Dashboard.");
                 }
+            } else if (found && found.status === 'Offline') {
+                alert("Penambahan ditolak! Perangkat '" + chamberId + "' terdeteksi Offline / tidak aktif.");
             } else {
-                alert("Device tidak tersedia! Pastikan ESP perangkat tersebut sudah menyala dan pernah mengirimkan data.");
+                alert("Penambahan ditolak! Nama perangkat '" + chamberId + "' tidak ditemukan / tidak tersedia di database.");
             }
         }
     } catch (e) {
