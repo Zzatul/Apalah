@@ -70,6 +70,14 @@ void taskSensorDanWiFi(void * pvParameters) {
     float h1_b = bmeBawah.readHumidity();
     float p1_b = bmeBawah.readPressure() / 100.0F;
 
+    // Proteksi anti-NaN jika sensor belum terpasang
+    if (isnan(t1_a)) t1_a = 0.0;
+    if (isnan(h1_a)) h1_a = 0.0;
+    if (isnan(p1_a)) p1_a = 0.0;
+    if (isnan(t1_b)) t1_b = 0.0;
+    if (isnan(h1_b)) h1_b = 0.0;
+    if (isnan(p1_b)) p1_b = 0.0;
+
     vTaskDelay(2000 / portTICK_PERIOD_MS); // Jeda 2 detik antar sample untuk kestabilan pembacaan rata-rata
 
     // --- PENGAMBILAN SAMPLE 2 ---
@@ -83,6 +91,14 @@ void taskSensorDanWiFi(void * pvParameters) {
     float t2_b = bmeBawah.readTemperature();
     float h2_b = bmeBawah.readHumidity();
     float p2_b = bmeBawah.readPressure() / 100.0F;
+
+    // Proteksi anti-NaN jika sensor belum terpasang
+    if (isnan(t2_a)) t2_a = 0.0;
+    if (isnan(h2_a)) h2_a = 0.0;
+    if (isnan(p2_a)) p2_a = 0.0;
+    if (isnan(t2_b)) t2_b = 0.0;
+    if (isnan(h2_b)) h2_b = 0.0;
+    if (isnan(p2_b)) p2_b = 0.0;
 
     // --- KALKULASI RATA-RATA (BME & MQ-4) ---
     float avgSuhu = (t1_a + t1_b + t2_a + t2_b) / 4.0;
