@@ -19,7 +19,9 @@
     <aside class="sidebar-pill" style="position: relative;">
         <div class="logo-icon d-flex justify-content-center align-items-center"><img src="logo.png" alt="Logo" style="width: 58px; height: auto; object-fit: contain; filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.15));"></div>
         <a href="#" class="active" id="nav-dashboard" onclick="switchView('dashboard'); event.preventDefault();" data-bs-toggle="tooltip" data-bs-placement="right" title="Dashboard Utama"><i class="bi bi-house-door-fill"></i></a>
-        <a href="#" id="nav-analytics" onclick="switchView('analytics'); event.preventDefault();" data-bs-toggle="tooltip" data-bs-placement="right" title="Analitik & Prediktif"><i class="bi bi-sprout"></i></a>
+        <a href="#" id="nav-analytics" onclick="switchView('analytics'); event.preventDefault();" data-bs-toggle="tooltip" data-bs-placement="right" title="Analitik & Prediktif">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-13"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></svg>
+        </a>
         <a href="#" id="nav-settings" onclick="switchView('settings'); event.preventDefault();" data-bs-toggle="tooltip" data-bs-placement="right" title="Pengaturan Sistem"><i class="bi bi-sliders"></i></a>
         
         <div class="spacer"></div>
@@ -328,13 +330,15 @@
                 </div>
             </div>
         </div>
+    </div>
+
     <!-- HALAMAN ANALITIK & PREDIKTIF (OPTIMASI DOSIS PUPUK & EMISI METAN) -->
     <main class="main-content" id="view-analytics" style="display: none;">
         <!-- Top Toolbar Analitik -->
         <header class="top-toolbar">
             <div class="toolbar-group">
                 <div class="pill">
-                    <i class="bi bi-sprout text-success fs-5"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#20c997" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="me-1"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-13"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></svg>
                     <div>
                         <span class="fw-bold">Analitik & Prediktif</span>
                         <span class="text-white-50 ms-1 d-none d-md-inline" style="font-size: 11px;">| Rekomendasi Pupuk & Mitigasi Emisi CH₄</span>
