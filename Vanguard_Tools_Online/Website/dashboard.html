@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Dashboard - IoT Sampling Tools</title>
+    <link rel="icon" type="image/png" href="favicon.png">
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
 </head>
 <body class="glass-body">
 
@@ -16,6 +19,7 @@
     <aside class="sidebar-pill" style="position: relative;">
         <div class="logo-icon d-flex justify-content-center align-items-center"><img src="logo.png" alt="Logo" style="width: 58px; height: auto; object-fit: contain; filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.15));"></div>
         <a href="#" class="active" id="nav-dashboard" onclick="switchView('dashboard'); event.preventDefault();" data-bs-toggle="tooltip" data-bs-placement="right" title="Dashboard Utama"><i class="bi bi-house-door-fill"></i></a>
+        <a href="#" id="nav-analytics" onclick="switchView('analytics'); event.preventDefault();" data-bs-toggle="tooltip" data-bs-placement="right" title="Analitik & Prediktif"><i class="bi bi-sprout"></i></a>
         <a href="#" id="nav-settings" onclick="switchView('settings'); event.preventDefault();" data-bs-toggle="tooltip" data-bs-placement="right" title="Pengaturan Sistem"><i class="bi bi-sliders"></i></a>
         
         <div class="spacer"></div>
@@ -27,7 +31,7 @@
             </span>
         </a>
         
-        <a href="#" id="btn-help" onclick="switchView('help'); event.preventDefault();" data-bs-toggle="tooltip" data-bs-placement="right" title="Panduan Alat">
+        <a href="#" id="btn-help" onclick="switchView('help'); event.preventDefault();" data-bs-toggle="tooltip" data-bs-placement="right" title="Help Center">
             <i class="bi bi-question-circle"></i>
         </a>
         
@@ -209,7 +213,8 @@
                             <div class="tab-content" id="ctrl-tabContent">
                                 <!-- Mode Manual -->
                                 <div class="tab-pane fade show active" id="panel-manual" role="tabpanel">
-                                    <div class="p-3 bg-light rounded border">
+                                    <!-- Form Kontrol Manual -->
+                                    <div id="manual-controls-form" class="p-3 bg-light rounded border">
                                         <div class="d-flex justify-content-between align-items-center mb-3">
                                             <span class="fw-bold text-secondary small"><i class="bi bi-fan"></i> Kipas</span>
                                             <label class="switch-mini">
@@ -218,18 +223,25 @@
                                             </label>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <span class="fw-bold text-secondary small"><i class="bi bi-syringe"></i> Syringe</span>
+                                            <span class="fw-bold text-secondary small"><i class="bi bi-syringe"></i> Syringe <span id="detail-syringe-pos" class="badge bg-secondary ms-1" style="font-size:9px;">Di Tengah</span></span>
                                             <div class="btn-group-tiny">
-                                                <button id="detail-btn-up" class="btn btn-outline-primary btn-sm py-0 px-2" disabled>UP</button>
-                                                <button id="detail-btn-down" class="btn btn-outline-primary btn-sm py-0 px-2" disabled>DWN</button>
+                                                <button id="detail-btn-up" class="btn btn-outline-primary btn-sm py-0 px-2">UP</button>
+                                                <button id="detail-btn-down" class="btn btn-outline-primary btn-sm py-0 px-2">DWN</button>
                                             </div>
                                         </div>
+                                    </div>
+                                    <!-- Alert Offline Manual -->
+                                    <div id="manual-offline-alert" class="d-flex flex-column align-items-center justify-content-center text-center p-4 rounded border bg-light text-muted" style="min-height: 140px; display: none;">
+                                        <i class="bi bi-cloud-slash text-danger" style="font-size: 2rem; margin-bottom: 8px;"></i>
+                                        <span class="fw-bold" style="font-size: 13px;">Device sedang dalam keadaan offline</span>
+                                        <span class="small text-muted" style="font-size: 10px; margin-top: 4px;">Aktifkan alat untuk menggunakan kontrol manual.</span>
                                     </div>
                                 </div>
                                 
                                 <!-- Mode Otomatis -->
                                 <div class="tab-pane fade" id="panel-otomatis" role="tabpanel">
-                                    <div class="p-3 border rounded bg-white shadow-sm mt-2">
+                                    <!-- Form Kontrol Otomatis -->
+                                    <div id="otomatis-controls-form" class="p-3 border rounded bg-white shadow-sm mt-2">
                                         <p class="text-center small text-muted mb-3" id="otomatis-deskripsi">Atur jadwal presisi untuk otomatisasi Kipas dan Syringe tanpa intervensi manual.</p>
                                         <div id="otomatis-list-container" class="mb-3 custom-scrollbar" style="display: none; max-height: 120px; overflow-y: auto;">
                                             <!-- Daftar Jadwal akan diisi oleh JS -->
@@ -237,6 +249,12 @@
                                         <button class="btn btn-primary btn-sm w-100 fw-bold" data-bs-toggle="modal" data-bs-target="#modalJadwal">
                                             <i class="bi bi-calendar-plus"></i> Buka Editor Jadwal
                                         </button>
+                                    </div>
+                                    <!-- Alert Offline Otomatis -->
+                                    <div id="otomatis-offline-alert" class="d-flex flex-column align-items-center justify-content-center text-center p-4 rounded border bg-light text-muted mt-2" style="min-height: 140px; display: none;">
+                                        <i class="bi bi-cloud-slash text-danger" style="font-size: 2rem; margin-bottom: 8px;"></i>
+                                        <span class="fw-bold" style="font-size: 13px;">Device sedang dalam keadaan offline</span>
+                                        <span class="small text-muted" style="font-size: 10px; margin-top: 4px;">Aktifkan alat untuk menggunakan kontrol otomatis.</span>
                                     </div>
                                 </div>
                             </div>
@@ -247,36 +265,41 @@
                         <div class="col-lg-9">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h6 class="fw-bold mb-0 text-secondary">Grafik History</h6>
-                                <div class="dropdown">
-                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle py-0" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside">
-                                        <i class="bi bi-funnel"></i> Filter Grafik
+                                <div class="d-flex align-items-center gap-2">
+                                    <button class="btn btn-sm btn-outline-secondary py-0" type="button" onclick="resetHistoryChartZoom()" title="Reset Tampilan Grafik">
+                                        <i class="bi bi-arrow-counterclockwise"></i> Reset Zoom
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-end p-2 shadow" style="font-size: 13px;">
-                                        <li>
-                                            <div class="form-check">
-                                                <input class="form-check-input chart-filter" type="checkbox" value="0" id="chkSuhu" checked onchange="updateChartVisibility()">
-                                                <label class="form-check-label text-danger fw-bold" for="chkSuhu">Suhu</label>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="form-check">
-                                                <input class="form-check-input chart-filter" type="checkbox" value="1" id="chkLembap" checked onchange="updateChartVisibility()">
-                                                <label class="form-check-label text-primary fw-bold" for="chkLembap">Kelembapan</label>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="form-check">
-                                                <input class="form-check-input chart-filter" type="checkbox" value="2" id="chkTekanan" checked onchange="updateChartVisibility()">
-                                                <label class="form-check-label text-success fw-bold" for="chkTekanan">Tekanan</label>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="form-check">
-                                                <input class="form-check-input chart-filter" type="checkbox" value="3" id="chkMetana" checked onchange="updateChartVisibility()">
-                                                <label class="form-check-label text-warning fw-bold" for="chkMetana">Metana</label>
-                                            </div>
-                                        </li>
-                                    </ul>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle py-0" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                                            <i class="bi bi-funnel"></i> Filter Grafik
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end p-2 shadow" style="font-size: 13px;">
+                                            <li>
+                                                <div class="form-check">
+                                                    <input class="form-check-input chart-filter" type="checkbox" value="0" id="chkSuhu" checked onchange="updateChartVisibility()">
+                                                    <label class="form-check-label text-danger fw-bold" for="chkSuhu">Suhu</label>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="form-check">
+                                                    <input class="form-check-input chart-filter" type="checkbox" value="1" id="chkLembap" checked onchange="updateChartVisibility()">
+                                                    <label class="form-check-label text-primary fw-bold" for="chkLembap">Kelembapan</label>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="form-check">
+                                                    <input class="form-check-input chart-filter" type="checkbox" value="2" id="chkTekanan" checked onchange="updateChartVisibility()">
+                                                    <label class="form-check-label text-success fw-bold" for="chkTekanan">Tekanan</label>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="form-check">
+                                                    <input class="form-check-input chart-filter" type="checkbox" value="3" id="chkMetana" checked onchange="updateChartVisibility()">
+                                                    <label class="form-check-label text-warning fw-bold" for="chkMetana">Metana</label>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                             <div style="height: 220px; margin-bottom: 25px;">
@@ -305,7 +328,259 @@
                 </div>
             </div>
         </div>
-    </div>
+    <!-- HALAMAN ANALITIK & PREDIKTIF (OPTIMASI DOSIS PUPUK & EMISI METAN) -->
+    <main class="main-content" id="view-analytics" style="display: none;">
+        <!-- Top Toolbar Analitik -->
+        <header class="top-toolbar">
+            <div class="toolbar-group">
+                <div class="pill">
+                    <i class="bi bi-sprout text-success fs-5"></i>
+                    <div>
+                        <span class="fw-bold">Analitik & Prediktif</span>
+                        <span class="text-white-50 ms-1 d-none d-md-inline" style="font-size: 11px;">| Rekomendasi Pupuk & Mitigasi Emisi CH₄</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="toolbar-group">
+                <!-- Dropdown Pilih Chamber & Tombol Atur Tanaman -->
+                <div class="pill py-1 px-3 d-flex align-items-center gap-2">
+                    <i class="bi bi-cpu text-info"></i>
+                    <span class="small text-white-50">Chamber:</span>
+                    <select id="analyticsChamberSelect" class="form-select form-select-sm bg-dark text-white border-secondary py-0" style="min-width: 130px; font-size: 12px;" onchange="changeAnalyticsChamber(this.value)">
+                        <!-- Diisi otomatis oleh JS -->
+                    </select>
+                </div>
+
+                <button class="btn btn-sm btn-outline-success rounded-pill fw-semibold px-3 py-2 shadow-sm d-flex align-items-center gap-2" onclick="bukaModalTanaman()" title="Atur Nama Komoditas / Tanaman untuk Chamber ini">
+                    <i class="bi bi-pencil-square"></i>
+                    <span id="btn-crop-label">Atur Tanaman (Padi)</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="dashboard-content pb-4">
+            <!-- ROW 1: PANEL 1 (KLASIFIKASI KONDISI LAHAN) & PANEL 2 (REKOMENDASI DOSIS PUPUK) -->
+            <div class="row g-3 mb-3">
+                <!-- PANEL 1: KLASIFIKASI KONDISI LAHAN -->
+                <div class="col-lg-6">
+                    <div class="p-4 rounded-4 shadow-sm border h-100 analytics-card">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold mb-0 text-white"><i class="bi bi-shield-shaded text-info me-2"></i> 1. Klasifikasi Kondisi Lahan</h6>
+                            <span class="badge bg-secondary-subtle text-light border border-light-subtle" id="land-crop-tag">🌱 Padi Inpari 32</span>
+                        </div>
+                        
+                        <div class="text-white-50 small mb-2">Pertanyaan Utama Sistem: <em>"Bagaimana kondisi tanah saat ini?"</em></div>
+                        
+                        <!-- Indikator Status Lahan -->
+                        <div id="land-status-badge" class="land-status-badge badge-aman mb-3">
+                            <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+                            <span id="land-status-text" class="fw-bold fs-6">Aman (Kondisi Aerobik Optimal)</span>
+                        </div>
+
+                        <!-- Confidence Score (Tingkat Keyakinan) -->
+                        <div class="p-3 rounded-3 bg-white-5 border border-white-10 mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="small text-white-50"><i class="bi bi-cpu-fill text-primary me-1"></i> Confidence Score (Tingkat Keyakinan AI)</span>
+                                <span class="badge bg-primary px-2 py-1" id="land-accuracy-pill">Akurasi Prediksi: 94.5%</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-3 mt-2">
+                                <h3 class="fw-bold text-white mb-0" id="land-confidence-val">94.5%</h3>
+                                <div class="progress flex-grow-1" style="height: 8px; background: rgba(255,255,255,0.1); border-radius: 6px;">
+                                    <div id="land-confidence-bar" class="progress-bar bg-success" role="progressbar" style="width: 94.5%; border-radius: 6px;"></div>
+                                </div>
+                            </div>
+                            <div class="text-white-50 small mt-2" style="font-size: 11px;">
+                                Dihitung dari kombinasi sensor CH₄, Suhu, Kelembapan, dan model klasifikasi pembentukan gas anaerobik tanah padi.
+                            </div>
+                        </div>
+
+                        <p class="small text-white-50 mb-0" id="land-status-desc">
+                            Kondisi tanah berada dalam status aman. Sirkulasi oksigen tanah terjaga baik dan laju emisi gas metana minimal, sehingga sistem perakaran padi siap menyerap nutrisi pupuk secara maksimal.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- PANEL 2: REKOMENDASI DOSIS PUPUK (ACTIONABLE INSIGHT) -->
+                <div class="col-lg-6">
+                    <div class="p-4 rounded-4 shadow-sm border h-100 analytics-card">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold mb-0 text-white"><i class="bi bi-lightning-charge-fill text-warning me-2"></i> 2. Rekomendasi Dosis Pupuk</h6>
+                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle">Actionable Insight</span>
+                        </div>
+
+                        <!-- Status Tindakan -->
+                        <div class="mb-3">
+                            <div class="text-white-50 small mb-1">Status Tindakan Operator:</div>
+                            <div id="fert-action-badge" class="fert-action-badge action-optimal">
+                                <i class="bi bi-calendar-check-fill me-2 fs-5"></i>
+                                <span id="fert-action-text" class="fw-bold">Waktu Optimal Pemupukan</span>
+                            </div>
+                        </div>
+
+                        <!-- Estimasi Dosis -->
+                        <div class="p-3 rounded-3 bg-white-5 border border-white-10 mb-3">
+                            <div class="text-white-50 small mb-1">Estimasi Dosis Pupuk Maksimal yang Disarankan:</div>
+                            <div class="d-flex align-items-baseline gap-2">
+                                <h2 class="fw-bold text-success mb-0" id="fert-dose-num">50</h2>
+                                <span class="text-white-50 fw-semibold">kg / Ha saat ini</span>
+                            </div>
+                            <div class="d-flex flex-wrap gap-2 mt-2">
+                                <span class="badge bg-dark border border-secondary text-light py-1 px-2" id="fert-urea-text">Urea: 35 - 50 kg/Ha</span>
+                                <span class="badge bg-dark border border-secondary text-light py-1 px-2" id="fert-npk-text">NPK: 75 - 100 kg/Ha</span>
+                            </div>
+                        </div>
+
+                        <!-- Saran Tambahan (Instruksi Mekanis & Agronomis) -->
+                        <div class="p-3 rounded-3 border border-info-subtle bg-info-subtle-10" id="fert-advice-card">
+                            <div class="fw-bold text-info small mb-1"><i class="bi bi-info-circle-fill me-1"></i> Saran Tindakan Mekanis & Lapangan:</div>
+                            <div class="small text-white-50" id="fert-advice-text">
+                                Lakukan pemupukan pada pagi atau sore hari saat suhu air tanah sejuk. Pertahankan kondisi air macak-macak (1-2 cm) dan lakukan pengeringan lahan berkala (aerasi) untuk menekan laju emisi CH₄ pasca-aplikasi.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ROW 2: PANEL 3 (MATRIKS PARAMETER PREDIKTOR) -->
+            <div class="row g-3 mb-3">
+                <div class="col-12">
+                    <div class="p-4 rounded-4 shadow-sm border analytics-card">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold mb-0 text-white"><i class="bi bi-grid-3x3-gap-fill text-primary me-2"></i> 3. Matriks Parameter Prediktor (Dasar Keputusan AI)</h6>
+                            <span class="text-white-50 small"><i class="bi bi-clock-history me-1"></i> Rata-rata Harian & Tren vs Hari Sebelumnya</span>
+                        </div>
+
+                        <div class="row g-3">
+                            <!-- Metana CH4 -->
+                            <div class="col-6 col-md-3">
+                                <div class="p-3 rounded-3 bg-white-5 border border-white-10 text-center h-100">
+                                    <div class="text-white-50 small mb-1"><i class="bi bi-cloud-haze text-warning me-1"></i> Gas Metana (CH₄)</div>
+                                    <h4 class="fw-bold text-warning mb-1" id="mat-metana-val">-- ppm</h4>
+                                    <div class="small fw-semibold" id="mat-metana-trend"><i class="bi bi-dash"></i> Stabil</div>
+                                    <div class="text-white-50 mt-1" style="font-size: 10px;">Batas Aman: &lt; 500 ppm</div>
+                                </div>
+                            </div>
+                            <!-- Suhu -->
+                            <div class="col-6 col-md-3">
+                                <div class="p-3 rounded-3 bg-white-5 border border-white-10 text-center h-100">
+                                    <div class="text-white-50 small mb-1"><i class="bi bi-thermometer-half text-danger me-1"></i> Suhu Tanah / Air</div>
+                                    <h4 class="fw-bold text-danger mb-1" id="mat-suhu-val">-- °C</h4>
+                                    <div class="small fw-semibold" id="mat-suhu-trend"><i class="bi bi-dash"></i> Stabil</div>
+                                    <div class="text-white-50 mt-1" style="font-size: 10px;">Optimal: 24 - 32 °C</div>
+                                </div>
+                            </div>
+                            <!-- Kelembapan -->
+                            <div class="col-6 col-md-3">
+                                <div class="p-3 rounded-3 bg-white-5 border border-white-10 text-center h-100">
+                                    <div class="text-white-50 small mb-1"><i class="bi bi-droplet-half text-primary me-1"></i> Kelembapan</div>
+                                    <h4 class="fw-bold text-primary mb-1" id="mat-kelembapan-val">-- %</h4>
+                                    <div class="small fw-semibold" id="mat-kelembapan-trend"><i class="bi bi-dash"></i> Stabil</div>
+                                    <div class="text-white-50 mt-1" style="font-size: 10px;">Relatif Udara & Tanah</div>
+                                </div>
+                            </div>
+                            <!-- Tekanan Udara -->
+                            <div class="col-6 col-md-3">
+                                <div class="p-3 rounded-3 bg-white-5 border border-white-10 text-center h-100">
+                                    <div class="text-white-50 small mb-1"><i class="bi bi-speedometer2 text-success me-1"></i> Tekanan Udara</div>
+                                    <h4 class="fw-bold text-success mb-1" id="mat-tekanan-val">-- hPa</h4>
+                                    <div class="small fw-semibold text-white-50" id="mat-tekanan-trend"><i class="bi bi-check2"></i> Normal Barometrik</div>
+                                    <div class="text-white-50 mt-1" style="font-size: 10px;">Potensial Redoks (Eh) Estimasi</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ROW 3: PANEL 4 (GRAFIK PREDIKSI TREN FORECASTING) -->
+            <div class="row g-3 mb-3">
+                <div class="col-12">
+                    <div class="p-4 rounded-4 shadow-sm border analytics-card">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                            <div>
+                                <h6 class="fw-bold mb-0 text-white"><i class="bi bi-graph-up-arrow text-info me-2"></i> 4. Grafik Prediksi Tren Emisi Metana (Forecasting 3–5 Hari)</h6>
+                                <div class="text-white-50 small">Memproyeksikan dinamika gas CH₄ untuk kesiapan jadwal pemupukan padi</div>
+                            </div>
+                            
+                            <!-- Legend Lines -->
+                            <div class="d-flex align-items-center gap-3 small flex-wrap">
+                                <span class="d-flex align-items-center gap-1 text-white-50">
+                                    <span class="legend-line-sample solid-sample"></span> Data Historis (Solid)
+                                </span>
+                                <span class="d-flex align-items-center gap-1 text-info">
+                                    <span class="legend-line-sample dashed-sample"></span> Prediksi 3-5 Hari (Dashed)
+                                </span>
+                                <span class="d-flex align-items-center gap-1 text-danger">
+                                    <span class="legend-line-sample danger-sample"></span> Batas Ambang Kritis
+                                </span>
+                            </div>
+                        </div>
+
+                        <div style="position: relative; height: 260px; width: 100%;">
+                            <canvas id="forecastChart"></canvas>
+                        </div>
+
+                        <div class="p-3 rounded-3 mt-3 bg-white-5 border border-white-10 d-flex flex-wrap align-items-center justify-content-between gap-2 small text-white-50">
+                            <div id="forecast-insight-banner">
+                                <i class="bi bi-lightbulb-fill text-warning me-1"></i> <span id="forecast-insight-text">Berdasarkan data saat ini, tren metana diproyeksikan stabil. Pemupukan aman dilakukan sesuai rekomendasi dosis harian.</span>
+                            </div>
+                            <button class="btn btn-sm btn-outline-secondary py-1 px-3 text-white-50 rounded-pill" onclick="refreshForecastPrediction()">
+                                <i class="bi bi-arrow-clockwise me-1"></i> Hitung Ulang Prediksi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ROW 4: PANEL 5 (LOG EVALUASI KEPUTUSAN & RETRAINING DATASET) -->
+            <div class="row g-3">
+                <div class="col-12">
+                    <div class="p-4 rounded-4 shadow-sm border analytics-card">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                            <div>
+                                <h6 class="fw-bold mb-0 text-white"><i class="bi bi-clipboard2-check-fill text-success me-2"></i> 5. Log Evaluasi Keputusan & Dataset Pelatihan Ulang (Retraining)</h6>
+                                <div class="text-white-50 small">Riwayat rekomendasi dan feedback validasi operator untuk hyperparameter tuning model AI</div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-light border-light-subtle py-1 px-3 rounded-pill" onclick="catatEvaluasiSekarang()">
+                                    <i class="bi bi-bookmark-plus me-1"></i> Rekam Evaluasi Saat Ini
+                                </button>
+                                <button class="btn btn-sm btn-success py-1 px-3 rounded-pill fw-semibold" onclick="exportEvaluationLogs()">
+                                    <i class="bi bi-download me-1"></i> Unduh Dataset Evaluasi (CSV)
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive rounded-4 border border-white-10 custom-scrollbar" style="max-height: 250px; overflow-y: auto; background: rgba(255, 255, 255, 0.02);">
+                            <table class="table table-hover table-sm text-white mb-0 align-middle" style="font-size: 13px;">
+                                <thead class="sticky-top" style="background: rgba(10, 20, 38, 0.95);">
+                                    <tr class="text-white-50">
+                                        <th style="min-width: 130px;">Tanggal / Waktu</th>
+                                        <th style="min-width: 120px;">Chamber / Tanaman</th>
+                                        <th style="min-width: 100px;">Gas Metana</th>
+                                        <th style="min-width: 130px;">Kondisi Lahan</th>
+                                        <th style="min-width: 180px;">Rekomendasi Dosis</th>
+                                        <th style="min-width: 140px;" class="text-center">Validasi Operator</th>
+                                        <th style="min-width: 160px;">Catatan Lapangan</th>
+                                        <th style="min-width: 60px;" class="text-end">Hapus</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="evaluation-table-body">
+                                    <!-- Diisi oleh JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer / Credit Teks -->
+        <div class="text-center mt-3">
+            <p class="text-white-50 small mb-0 fw-semibold" style="font-size: 11px; opacity: 0.65; letter-spacing: 0.5px;">By Poltek Nuklir dan Vanguard Labs Team</p>
+        </div>
+    </main>
 
     <!-- HALAMAN PENGATURAN (Sembunyi secara default) -->
     <main class="main-content" id="view-settings" style="display: none;">
@@ -377,7 +652,7 @@
         </div>
         
         <div class="row mb-4">
-            <div class="col-md-6" id="serverHealthCard">
+            <div class="col-md-12" id="serverHealthCard">
                 <div class="p-4 bg-white rounded-4 shadow-sm border h-100">
                     <h5 class="fw-bold mb-3"><i class="bi bi-server text-secondary"></i> Status Server</h5>
                     <ul class="list-unstyled small text-muted mb-0">
@@ -388,17 +663,6 @@
                         <li class="mb-1"><i class="bi bi-database-fill me-2"></i> Total Data Sensor: <span id="sh-data" class="fw-bold text-dark">-</span> baris</li>
                         <li><i class="bi bi-people-fill me-2"></i> Total Anggota: <span id="sh-users" class="fw-bold text-dark">-</span> pengguna</li>
                     </ul>
-                </div>
-            </div>
-            
-            <div class="col-md-6" id="tampilan-setting">
-                <div class="p-4 bg-white rounded-4 shadow-sm border h-100">
-                    <h5 class="fw-bold mb-3"><i class="bi bi-moon-stars-fill text-dark"></i> Preferensi Tampilan</h5>
-                    <p class="text-muted small">Aktifkan Mode Gelap (Dark Mode) agar lebih nyaman di malam hari.</p>
-                    <div class="form-check form-switch mt-3">
-                        <input class="form-check-input" type="checkbox" id="darkModeSwitch" onchange="toggleDarkMode()">
-                        <label class="form-check-label fw-bold" for="darkModeSwitch">Gunakan Mode Gelap</label>
-                    </div>
                 </div>
             </div>
         </div>
@@ -441,7 +705,7 @@
         <!-- Header Halaman -->
         <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-light-subtle" style="border-bottom-color: rgba(255,255,255,0.08) !important;">
             <div>
-                <h4 class="fw-bold mb-1 text-white"><i class="bi bi-bell-fill text-warning me-2"></i>Riwayat Notifikasi</h4>
+                <h4 class="fw-bold mb-1 text-white">Riwayat Notifikasi</h4>
                 <p class="text-muted small mb-0">Daftar log aktivitas dan sistem monitoring secara keseluruhan</p>
             </div>
             <button class="btn btn-outline-info btn-sm fw-bold px-3 py-2" onclick="markAllAsReadPage(event)">
@@ -467,7 +731,7 @@
         <!-- Header Halaman -->
         <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-light-subtle" style="border-bottom-color: rgba(255,255,255,0.08) !important;">
             <div>
-                <h4 class="fw-bold mb-1 text-white"><i class="bi bi-question-circle-fill text-info me-2"></i>Modul & Panduan Alat</h4>
+                <h4 class="fw-bold mb-1 text-white">Help Center</h4>
                 <p class="text-muted small mb-0">Panduan teknis pengoperasian sistem monitoring Smart Chamber</p>
             </div>
         </div>
@@ -480,40 +744,34 @@
                 <div class="accordion-item mb-3" style="background: rgba(255,255,255,0.01) !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 12px; overflow: hidden;">
                     <h2 class="accordion-header" id="headingOne">
                         <button class="accordion-button fw-bold text-white collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne" style="background: transparent !important; color: #ffffff !important; box-shadow: none;">
-                            <i class="bi bi-cpu text-info me-2"></i> 1. Cara Kerja Alat (Smart Chamber)
+                            1. Cara Kerja Alat (Smart Chamber)
                         </button>
                     </h2>
                     <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#helpAccordion">
                         <div class="accordion-body text-white-50" style="font-size: 13px; line-height: 1.6;">
-                            Smart Chamber bekerja dengan mengumpulkan data kondisi mikro dari dalam bilah tanah/tanaman padi secara real-time.
+                            Smart Chamber dirancang untuk mengambil sampel udara dan gas secara presisi. Sistem ini beroperasi menggunakan dua sensor utama untuk memastikan kualitas data:
                             <ul>
-                                <li><strong>Sensor DHT22/SHT31:</strong> Memantau Suhu (°C) dan Kelembapan (%) udara dalam sungkup.</li>
-                                <li><strong>Barometer BMP280:</strong> Mengukur Tekanan udara (hPa).</li>
-                                <li><strong>Sensor MQ-4:</strong> Mengukur konsentrasi gas Metana (ppm) yang dihasilkan tanah.</li>
-                                <li><strong>Mikrokontroler ESP32:</strong> Memproses data lokal dan mengirimkannya ke API server melalui koneksi WiFi.</li>
+                                <li><strong>Pemantauan Lingkungan:</strong> Sensor BME280 bekerja mengukur Suhu, Kelembapan, dan Tekanan Udara di sekitar area pengambilan sampel.</li>
+                                <li><strong>Pendeteksian Gas:</strong> Sensor MQ-4 secara aktif mendeteksi konsentrasi gas alam (Natural Gas) dan Metana (CH₄).</li>
                             </ul>
+                            Seluruh proses pengambilan sampel dilakukan secara otomatis melalui mekanisme syringe, dan data sensor akan langsung dikirim serta disimpan ke dalam sistem web secara real-time.
                         </div>
                     </div>
                 </div>
 
-                <!-- Item 2: Cara Membaca Sensor -->
+                <!-- Item 2: Cara Akses & Monitoring Web -->
                 <div class="accordion-item mb-3" style="background: rgba(255,255,255,0.01) !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 12px; overflow: hidden;">
                     <h2 class="accordion-header" id="headingTwo">
                         <button class="accordion-button fw-bold text-white collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" style="background: transparent !important; color: #ffffff !important; box-shadow: none;">
-                            <i class="bi bi-activity text-info me-2"></i> 2. Cara Membaca Sensor & Grafik
+                            2. Cara Akses & Monitoring Web
                         </button>
                     </h2>
                     <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#helpAccordion">
                         <div class="accordion-body text-white-50" style="font-size: 13px; line-height: 1.6;">
-                            Halaman Dashboard menampilkan rangkuman data sensor dalam bentuk kartu visual dan grafik interaktif.
+                            Sistem dirancang berbasis cloud (tanpa penyimpanan SD Card lokal) sehingga data dapat diakses dari mana saja.
                             <ul>
-                                <li><strong>Warna Kartu Chamber:</strong>
-                                    <ul>
-                                        <li><span class="text-info fw-bold">Biru/Cyan (Normal):</span> Sensor berada di bawah batas ambang bahaya.</li>
-                                        <li><span class="text-danger fw-bold">Merah Berkedip (Bahaya):</span> Salah satu parameter sensor melebihi ambang batas aman yang diatur di menu Pengaturan.</li>
-                                    </ul>
-                                </li>
-                                <li><strong>Grafik History:</strong> Menampilkan fluktuasi data sensor dalam rentang waktu tertentu. Anda dapat menyaring parameter yang ingin ditampilkan melalui tombol filter di atas grafik.</li>
+                                <li><strong>Login & Akses:</strong> Buka link web dashboard melalui browser di perangkat Anda, lalu masuk menggunakan kredensial yang telah diberikan.</li>
+                                <li><strong>Monitoring Data:</strong> Pada halaman utama (Beranda), Anda dapat langsung melihat pembaruan angka dari sensor BME280 dan MQ-4 yang disinkronisasi secara otomatis setiap kali alat mengambil sampel.</li>
                             </ul>
                         </div>
                     </div>
@@ -523,19 +781,68 @@
                 <div class="accordion-item mb-3" style="background: rgba(255,255,255,0.01) !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 12px; overflow: hidden;">
                     <h2 class="accordion-header" id="headingThree">
                         <button class="accordion-button fw-bold text-white collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree" style="background: transparent !important; color: #ffffff !important; box-shadow: none;">
-                            <i class="bi bi-clock-history text-info me-2"></i> 3. Cara Mengatur Jadwal Otomatisasi
+                            3. Cara Mengatur Jadwal Otomatisasi
                         </button>
                     </h2>
                     <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#helpAccordion">
                         <div class="accordion-body text-white-50" style="font-size: 13px; line-height: 1.6;">
-                            Otomatisasi dikendalikan melalui menu editor jadwal di dalam Modal Detail Chamber.
-                            <ol>
-                                <li>Klik tombol <strong>Detail</strong> pada salah satu kartu chamber di dashboard utama.</li>
-                                <li>Masuk to tab <strong>Otomatis</strong> pada Panel Kontrol.</li>
-                                <li>Klik <strong>Buka Editor Jadwal</strong> untuk menambah atau menghapus jadwal eksekusi.</li>
-                                <li>Pilih perangkat (Kipas ON/OFF atau Syringe UP/DOWN) serta jam eksekusi, lalu klik tombol tambah (+).</li>
-                                <li>Klik <strong>Selesai (Done)</strong> untuk menyimpan. Jadwal aktif akan langsung terdaftar di panel kontrol otomatis.</li>
-                            </ol>
+                            Alat ini terintegrasi dengan waktu online server (tanpa modul RTC fisik), sehingga jadwal yang Anda buat sangat akurat.
+                            <ul>
+                                <li><strong>Pengaturan Jadwal:</strong> Navigasikan ke menu Otomatisasi/Jadwal di panel sebelah kiri.</li>
+                                <li><strong>Tentukan Waktu:</strong> Masukkan jam dan interval waktu yang diinginkan untuk pengambilan sampel. Sistem akan secara otomatis menggerakkan mekanisme syringe and merekam data sensor tepat pada waktu yang telah Anda tentukan.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 4: Spesifikasi Alat -->
+                <div class="accordion-item mb-3" style="background: rgba(255,255,255,0.01) !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 12px; overflow: hidden;">
+                    <h2 class="accordion-header" id="headingFour">
+                        <button class="accordion-button fw-bold text-white collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour" style="background: transparent !important; color: #ffffff !important; box-shadow: none;">
+                            4. Spesifikasi Alat (Teknis)
+                        </button>
+                    </h2>
+                    <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#helpAccordion">
+                        <div class="accordion-body text-white-50" style="font-size: 13px; line-height: 1.6;">
+                            Berikut adalah spesifikasi teknis ringkas dari unit IoT Sampling Tools:
+                            <div class="table-responsive mt-2">
+                                <table class="table table-sm table-borderless text-white-50 mb-0" style="font-size: 12.5px;">
+                                    <tbody>
+                                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                            <td class="fw-bold py-2" style="width: 35%; color: rgba(255,255,255,0.85);">Nama Alat</td>
+                                            <td class="py-2">IoT Sampling Tools (Smart Chamber v2)</td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                            <td class="fw-bold py-2" style="color: rgba(255,255,255,0.85);">Pengembang</td>
+                                            <td class="py-2">Vanguard Labs Team</td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                            <td class="fw-bold py-2" style="color: rgba(255,255,255,0.85);">Mikrokontroler</td>
+                                            <td class="py-2">ESP32-D (Konektivitas WiFi & Bluetooth Terintegrasi)</td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                            <td class="fw-bold py-2" style="color: rgba(255,255,255,0.85);">Sensor Lingkungan</td>
+                                            <td class="py-2">BME280 (Mengukur Suhu, Kelembapan Relatif, dan Tekanan Udara)</td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                            <td class="fw-bold py-2" style="color: rgba(255,255,255,0.85);">Sensor Gas</td>
+                                            <td class="py-2">MQ-4 (Mendeteksi konsentrasi Gas Metana / CH₄ & Gas Alam)</td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                            <td class="fw-bold py-2" style="color: rgba(255,255,255,0.85);">Dimensi Chamber</td>
+                                            <td class="py-2">100 cm x 30 cm x 30 cm (P x L x T)</td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                            <td class="fw-bold py-2" style="color: rgba(255,255,255,0.85);">Struktur Fisik</td>
+                                            <td class="py-2">Rangka Aluminium Profile Modular + Dinding Panel Akrilik Transparan</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold py-2" style="color: rgba(255,255,255,0.85);">Mekanisme Kerja</td>
+                                            <td class="py-2">Pengambilan Sampel semi-otomatis/otomatis menggunakan aktuator kit syringe</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -625,6 +932,55 @@
                     <div class="mt-4 text-end">
                         <button type="button" class="btn btn-success px-4 fw-bold" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalDetail"><i class="bi bi-check2-circle"></i> Selesai (Done)</button>
                     </div>
+                </div>
+            </div>
+        </div>
+    <!-- MODAL ATUR METADATA TANAMAN CHAMBER -->
+    <div class="modal fade" id="modalTanamanChamber" tabindex="-1" aria-hidden="true" style="z-index: 1070;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg border-0" style="border-radius: 20px; background: #0c1527; color: white; border: 1px solid rgba(255, 255, 255, 0.15);">
+                <div class="modal-header border-bottom border-secondary pb-3">
+                    <h5 class="modal-title fw-bold text-white"><i class="bi bi-sprout text-success me-2"></i> Metadata Tanaman Chamber</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="form-tanaman" onsubmit="simpanMetadataTanaman(event)">
+                        <div class="mb-3">
+                            <label class="form-label text-white-50 small fw-bold mb-1">ID Chamber Terpilih</label>
+                            <input type="text" class="form-control bg-dark text-white border-secondary" id="cropChamberId" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-white-50 small fw-bold mb-1">Jenis Komoditas Tanaman</label>
+                            <input type="text" class="form-control bg-dark text-white border-secondary" id="cropNameInput" placeholder="Misal: Padi Sawah" value="Padi" required>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label text-white-50 small fw-bold mb-1">Varietas Padi / Tanaman</label>
+                                <input type="text" class="form-control bg-dark text-white border-secondary" id="cropVarietyInput" placeholder="Misal: Inpari 32 / Ciherang" value="Inpari 32">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label text-white-50 small fw-bold mb-1">Luas Petak Lahan (Ha)</label>
+                                <input type="number" step="0.1" class="form-control bg-dark text-white border-secondary" id="cropAreaInput" placeholder="1.0" value="1.0">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-white-50 small fw-bold mb-1">Fase Pertumbuhan Tanaman</label>
+                            <select class="form-select bg-dark text-white border-secondary" id="cropPhaseInput">
+                                <option value="Vegetatif Awal (0-20 HST)">Fase Vegetatif Awal (0 - 20 HST)</option>
+                                <option value="Vegetatif Aktif (21-45 HST)" selected>Fase Vegetatif Aktif / Anakan Maksimal (21 - 45 HST)</option>
+                                <option value="Primordia / Bunting (46-65 HST)">Fase Primordia / Bunting (46 - 65 HST)</option>
+                                <option value="Pengisian Butir / Pematangan (66-90 HST)">Fase Pengisian Butir (66 - 90 HST)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-white-50 small fw-bold mb-1">Catatan Tambahan Kondisi Lahan</label>
+                            <textarea class="form-control bg-dark text-white border-secondary" id="cropNotesInput" rows="2" placeholder="Misal: Petak A, irigasi macak-macak, tanah lempung berlumpur"></textarea>
+                        </div>
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <button type="button" class="btn btn-secondary rounded-pill px-3" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-success rounded-pill px-4 fw-bold"><i class="bi bi-save me-1"></i> Simpan Tanaman</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

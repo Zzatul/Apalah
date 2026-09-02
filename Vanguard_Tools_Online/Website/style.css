@@ -17,6 +17,14 @@ body {
     margin: 0;
 }
 
+#historyChart, #myChart {
+    cursor: grab;
+    touch-action: pan-x pan-y;
+}
+#historyChart:active, #myChart:active {
+    cursor: grabbing;
+}
+
 .login-body {
     background: radial-gradient(circle at 15% 20%, rgba(13, 110, 253, 0.25) 0%, transparent 45%),
                 radial-gradient(circle at 85% 80%, rgba(13, 202, 240, 0.2) 0%, transparent 45%),
@@ -668,3 +676,297 @@ input:checked + .slider-mini:before { transform: translateX(14px); }
     box-shadow: none !important;
     border-color: rgba(255, 255, 255, 0.1) !important;
 }
+
+/* ==========================================
+   RESPONSIVE DESIGN (LAPTOP, IPAD, & MOBILE)
+   ========================================== */
+
+/* Laptop & Tablet L (max-width: 1200px) */
+@media (max-width: 1200px) {
+    .workspace {
+        gap: 20px !important;
+        justify-content: center !important;
+    }
+}
+
+/* Tablet / iPad (max-width: 992px) */
+@media (max-width: 992px) {
+    .top-toolbar {
+        flex-wrap: wrap !important;
+        gap: 15px !important;
+    }
+    
+    .bottom-panel {
+        height: auto !important;
+        flex-direction: column !important;
+        gap: 25px !important;
+        padding: 15px !important;
+    }
+
+    .bottom-panel .panel-half {
+        width: 100% !important;
+    }
+
+    .bottom-panel .panel-half.border-start {
+        padding-left: 0 !important;
+        border-left: 0 !important;
+        border-top: 2px solid rgba(255, 255, 255, 0.08) !important;
+        padding-top: 20px !important;
+    }
+}
+
+/* Mobile & Small Tablet (max-width: 768px) */
+@media (max-width: 768px) {
+    .glass-body {
+        flex-direction: column-reverse !important;
+        height: 100vh !important;
+        overflow: hidden !important;
+    }
+
+    .sidebar-pill {
+        width: calc(100% - 30px) !important;
+        height: 65px !important;
+        margin: 10px 15px !important;
+        padding: 0 15px !important;
+        flex-direction: row !important;
+        justify-content: space-around !important;
+        align-items: center !important;
+        border-radius: 20px !important;
+        box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .sidebar-pill .logo-icon,
+    .sidebar-pill .spacer {
+        display: none !important;
+    }
+
+    .sidebar-pill a {
+        margin: 0 !important;
+        font-size: 22px !important;
+    }
+
+    .main-content {
+        padding: 15px 15px 5px 15px !important;
+        height: calc(100vh - 85px) !important;
+    }
+
+    .top-toolbar {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+        margin-bottom: 15px !important;
+    }
+
+    .toolbar-group {
+        justify-content: center !important;
+        width: 100% !important;
+    }
+
+    .dashboard-content {
+        gap: 20px !important;
+    }
+
+    /* Modal detail layout when stacked */
+    #modalDetail .border-end {
+        border-right: none !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        padding-bottom: 20px !important;
+        margin-bottom: 15px !important;
+    }
+    
+    #view-settings .row > [class*="col-"] {
+        margin-bottom: 20px !important;
+    }
+    #view-settings .row > [class*="col-"]:last-child {
+        margin-bottom: 0 !important;
+    }
+}
+
+/* Small Mobile (max-width: 576px) */
+@media (max-width: 576px) {
+    .login-body {
+        overflow-y: auto !important;
+        align-items: flex-start !important;
+        padding: 30px 0 !important;
+    }
+
+    .login-card {
+        padding: 25px 20px !important;
+        border-radius: 20px !important;
+    }
+
+    .login-card h3 {
+        font-size: 22px !important;
+    }
+
+    .chamber-node {
+        width: 100% !important;
+        min-width: 100% !important;
+    }
+
+    .workspace {
+        padding: 5px 0 !important;
+        gap: 15px !important;
+    }
+
+    .top-toolbar .pill {
+        font-size: 11px !important;
+        padding: 6px 12px !important;
+    }
+
+    .top-toolbar .pill-controls {
+        padding: 4px 10px !important;
+    }
+}
+
+/* ==========================================
+   STYLING TAB ANALITIK & PREDIKTIF
+========================================== */
+.analytics-card {
+    background: rgba(255, 255, 255, 0.02) !important;
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: white;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.analytics-card:hover {
+    border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.bg-white-5 {
+    background: rgba(255, 255, 255, 0.04) !important;
+}
+
+.border-white-10 {
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.bg-info-subtle-10 {
+    background: rgba(13, 202, 240, 0.06) !important;
+}
+
+/* Status Indikator Lahan */
+.land-status-badge {
+    padding: 12px 18px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.land-status-badge.badge-aman {
+    background: rgba(25, 135, 84, 0.15);
+    border: 1px solid rgba(25, 135, 84, 0.45);
+    color: #20c997;
+    box-shadow: 0 0 15px rgba(25, 135, 84, 0.2);
+}
+
+.land-status-badge.badge-waspada {
+    background: rgba(255, 193, 7, 0.15);
+    border: 1px solid rgba(255, 193, 7, 0.45);
+    color: #ffc107;
+    box-shadow: 0 0 15px rgba(255, 193, 7, 0.2);
+}
+
+.land-status-badge.badge-kritis {
+    background: rgba(220, 53, 69, 0.2);
+    border: 1px solid rgba(220, 53, 69, 0.6);
+    color: #ff6b6b;
+    box-shadow: 0 0 20px rgba(220, 53, 69, 0.35);
+    animation: pulseKritis 2s infinite;
+}
+
+@keyframes pulseKritis {
+    0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.5); }
+    70% { box-shadow: 0 0 0 12px rgba(220, 53, 69, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+}
+
+/* Status Tindakan Pupuk */
+.fert-action-badge {
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.fert-action-badge.action-optimal {
+    background: rgba(13, 110, 253, 0.15);
+    border: 1px solid rgba(13, 110, 253, 0.45);
+    color: #38bdf8;
+    box-shadow: 0 0 15px rgba(13, 110, 253, 0.2);
+}
+
+.fert-action-badge.action-reduce {
+    background: rgba(255, 193, 7, 0.15);
+    border: 1px solid rgba(255, 193, 7, 0.45);
+    color: #fde047;
+    box-shadow: 0 0 15px rgba(255, 193, 7, 0.2);
+}
+
+.fert-action-badge.action-delay {
+    background: rgba(220, 53, 69, 0.2);
+    border: 1px solid rgba(220, 53, 69, 0.6);
+    color: #fca5a5;
+    box-shadow: 0 0 15px rgba(220, 53, 69, 0.25);
+}
+
+/* Legend Line Samples untuk Chart Forecasting */
+.legend-line-sample {
+    display: inline-block;
+    width: 22px;
+    height: 3px;
+    vertical-align: middle;
+    border-radius: 2px;
+}
+
+.legend-line-sample.solid-sample {
+    background: #0dcaf0;
+    box-shadow: 0 0 6px rgba(13, 202, 240, 0.6);
+}
+
+.legend-line-sample.dashed-sample {
+    background: repeating-linear-gradient(90deg, #38bdf8, #38bdf8 4px, transparent 4px, transparent 8px);
+}
+
+.legend-line-sample.danger-sample {
+    background: repeating-linear-gradient(90deg, #dc3545, #dc3545 4px, transparent 4px, transparent 8px);
+}
+
+/* Validation Buttons in Evaluation Table */
+.btn-val {
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.btn-val.val-agree {
+    background: rgba(25, 135, 84, 0.15);
+    color: #20c997;
+    border-color: rgba(25, 135, 84, 0.4);
+}
+.btn-val.val-agree:hover, .btn-val.val-agree.active {
+    background: #198754;
+    color: white;
+    box-shadow: 0 0 10px rgba(25, 135, 84, 0.4);
+}
+
+.btn-val.val-disagree {
+    background: rgba(220, 53, 69, 0.15);
+    color: #ff6b6b;
+    border-color: rgba(220, 53, 69, 0.4);
+}
+.btn-val.val-disagree:hover, .btn-val.val-disagree.active {
+    background: #dc3545;
+    color: white;
+    box-shadow: 0 0 10px rgba(220, 53, 69, 0.4);
+}
+
+
