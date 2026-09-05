@@ -847,6 +847,272 @@ input:checked + .slider-mini:before { transform: translateX(14px); }
     background: rgba(13, 202, 240, 0.06) !important;
 }
 
+/* Badges & Tags Khusus Tab Analitik */
+.badge-crop-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px 5px 8px;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.18) 0%, rgba(5, 150, 105, 0.28) 100%);
+    border: 1px solid rgba(52, 211, 153, 0.5);
+    border-radius: 30px;
+    box-shadow: 0 2px 12px rgba(16, 185, 129, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    font-size: 0.82rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.25s ease;
+    user-select: none;
+    flex-wrap: nowrap;
+}
+
+.badge-crop-tag:hover {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.3) 0%, rgba(5, 150, 105, 0.45) 100%);
+    border-color: rgba(52, 211, 153, 0.85);
+    box-shadow: 0 4px 18px rgba(16, 185, 129, 0.45);
+    transform: translateY(-1px);
+}
+
+.badge-crop-tag .crop-tag-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgba(16, 185, 129, 0.3);
+    border: 1px solid rgba(52, 211, 153, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 0 10px rgba(52, 211, 153, 0.35);
+}
+
+.badge-crop-tag .crop-rice-svg {
+    width: 17px;
+    height: 17px;
+    filter: drop-shadow(0 0 3px rgba(251, 191, 36, 0.7));
+}
+
+.badge-crop-tag .crop-tag-name {
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+}
+
+.badge-crop-tag .crop-tag-phase {
+    background: rgba(16, 185, 129, 0.25);
+    border: 1px solid rgba(52, 211, 153, 0.45);
+    color: #6ee7b7;
+    padding: 3px 10px;
+    border-radius: 14px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+}
+
+.badge-crop-tag .crop-tag-edit {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-left: 2px;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.badge-crop-tag:hover .crop-tag-edit {
+    color: #34d399;
+    transform: scale(1.15);
+}
+
+/* Actionable Insight Badge */
+.badge-actionable-insight {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.16) 0%, rgba(180, 83, 9, 0.25) 100%);
+    border: 1px solid rgba(251, 191, 36, 0.5);
+    border-radius: 20px;
+    color: #fbbf24;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.4px;
+    box-shadow: 0 2px 10px rgba(245, 158, 11, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    transition: all 0.25s ease;
+}
+
+.badge-actionable-insight:hover {
+    border-color: rgba(251, 191, 36, 0.85);
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.35);
+    transform: translateY(-1px);
+}
+
+.badge-actionable-insight i {
+    color: #f59e0b;
+    font-size: 0.85rem;
+    filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.6));
+    animation: flashInsight 2.5s infinite ease-in-out;
+}
+
+@keyframes flashInsight {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.15); }
+}
+
+/* AI Prediction Accuracy Badge */
+.badge-ai-accuracy {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.2) 0%, rgba(30, 64, 175, 0.3) 100%);
+    border: 1px solid rgba(96, 165, 250, 0.45);
+    border-radius: 12px;
+    color: #93c5fd;
+    font-size: 0.75rem;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+}
+
+/* Fertilizer Dosage Pills */
+.fert-dose-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: 8px;
+    color: #e2e8f0;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.fert-dose-pill:hover {
+    background: rgba(30, 41, 59, 0.85);
+    border-color: rgba(148, 163, 184, 0.4);
+}
+
+.fert-dose-pill.pill-urea {
+    border-left: 3px solid #38bdf8;
+}
+
+.fert-dose-pill.pill-npk {
+    border-left: 3px solid #34d399;
+}
+
+/* Toolbar Crop Setting Button */
+.btn-crop-setting {
+    background: rgba(16, 185, 129, 0.12) !important;
+    border: 1px solid rgba(52, 211, 153, 0.45) !important;
+    color: #6ee7b7 !important;
+    backdrop-filter: blur(10px);
+    transition: all 0.2s ease;
+}
+
+.btn-crop-setting:hover {
+    background: rgba(16, 185, 129, 0.25) !important;
+    border-color: rgba(52, 211, 153, 0.8) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.3) !important;
+    transform: translateY(-1px);
+}
+
+/* Node Crop Badge on Dashboard */
+.node-crop-badge {
+    background: rgba(16, 185, 129, 0.15) !important;
+    border: 1px solid rgba(52, 211, 153, 0.4) !important;
+    color: #6ee7b7 !important;
+    font-size: 8.5px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 6px;
+    padding: 2px 6px;
+    transition: all 0.2s ease;
+}
+
+.node-crop-badge:hover {
+    background: rgba(16, 185, 129, 0.3) !important;
+    border-color: rgba(52, 211, 153, 0.8) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+}
+
+/* Global Bootstrap Subtle Badge Overrides for Dark Mode */
+.badge.bg-secondary-subtle,
+.badge.bg-light,
+.bg-secondary-subtle {
+    background: rgba(148, 163, 184, 0.15) !important;
+    border: 1px solid rgba(148, 163, 184, 0.35) !important;
+    color: #e2e8f0 !important;
+}
+
+.badge.bg-success-subtle,
+.bg-success-subtle {
+    background: rgba(16, 185, 129, 0.18) !important;
+    border: 1px solid rgba(52, 211, 153, 0.45) !important;
+    color: #6ee7b7 !important;
+}
+
+.badge.bg-warning-subtle,
+.bg-warning-subtle {
+    background: rgba(245, 158, 11, 0.18) !important;
+    border: 1px solid rgba(251, 191, 36, 0.45) !important;
+    color: #fde047 !important;
+}
+
+.badge.bg-danger-subtle,
+.bg-danger-subtle {
+    background: rgba(239, 68, 68, 0.18) !important;
+    border: 1px solid rgba(248, 113, 113, 0.45) !important;
+    color: #fca5a5 !important;
+}
+
+.badge.bg-info-subtle,
+.bg-info-subtle {
+    background: rgba(14, 165, 233, 0.18) !important;
+    border: 1px solid rgba(56, 189, 248, 0.45) !important;
+    color: #7dd3fc !important;
+}
+
+/* Evaluation Table Badges */
+.tbl-chamber-badge {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #f1f5f9;
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 3px 8px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+.tbl-status-badge {
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    border-radius: 12px;
+    display: inline-block;
+}
+
+.tbl-status-badge.status-aman {
+    background: rgba(16, 185, 129, 0.18);
+    border: 1px solid rgba(52, 211, 153, 0.45);
+    color: #6ee7b7;
+}
+
+.tbl-status-badge.status-waspada {
+    background: rgba(245, 158, 11, 0.18);
+    border: 1px solid rgba(251, 191, 36, 0.45);
+    color: #fde047;
+}
+
+.tbl-status-badge.status-kritis {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(248, 113, 113, 0.5);
+    color: #fca5a5;
+}
+
 /* Status Indikator Lahan */
 .land-status-badge {
     padding: 12px 18px;

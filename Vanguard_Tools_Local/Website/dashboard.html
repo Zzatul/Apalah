@@ -8,7 +8,7 @@
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2.3">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
@@ -19,7 +19,9 @@
     <aside class="sidebar-pill" style="position: relative;">
         <div class="logo-icon d-flex justify-content-center align-items-center"><img src="logo.png" alt="Logo" style="width: 58px; height: auto; object-fit: contain; filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.15));"></div>
         <a href="#" class="active" id="nav-dashboard" onclick="switchView('dashboard'); event.preventDefault();" data-bs-toggle="tooltip" data-bs-placement="right" title="Dashboard Utama"><i class="bi bi-house-door-fill"></i></a>
-        <a href="#" id="nav-analytics" onclick="switchView('analytics'); event.preventDefault();" data-bs-toggle="tooltip" data-bs-placement="right" title="Analitik & Prediktif"><i class="bi bi-sprout"></i></a>
+        <a href="#" id="nav-analytics" onclick="switchView('analytics'); event.preventDefault();" data-bs-toggle="tooltip" data-bs-placement="right" title="Analitik & Prediktif">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-13"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></svg>
+        </a>
         <a href="#" id="nav-settings" onclick="switchView('settings'); event.preventDefault();" data-bs-toggle="tooltip" data-bs-placement="right" title="Pengaturan Sistem"><i class="bi bi-sliders"></i></a>
         
         <div class="spacer"></div>
@@ -328,13 +330,15 @@
                 </div>
             </div>
         </div>
+    </div>
+
     <!-- HALAMAN ANALITIK & PREDIKTIF (OPTIMASI DOSIS PUPUK & EMISI METAN) -->
     <main class="main-content" id="view-analytics" style="display: none;">
         <!-- Top Toolbar Analitik -->
         <header class="top-toolbar">
             <div class="toolbar-group">
                 <div class="pill">
-                    <i class="bi bi-sprout text-success fs-5"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#20c997" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="me-1"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-13"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></svg>
                     <div>
                         <span class="fw-bold">Analitik & Prediktif</span>
                         <span class="text-white-50 ms-1 d-none d-md-inline" style="font-size: 11px;">| Rekomendasi Pupuk & Mitigasi Emisi CH₄</span>
@@ -352,7 +356,7 @@
                     </select>
                 </div>
 
-                <button class="btn btn-sm btn-outline-success rounded-pill fw-semibold px-3 py-2 shadow-sm d-flex align-items-center gap-2" onclick="bukaModalTanaman()" title="Atur Nama Komoditas / Tanaman untuk Chamber ini">
+                <button class="btn btn-sm btn-crop-setting rounded-pill fw-semibold px-3 py-2 shadow-sm d-flex align-items-center gap-2" onclick="bukaModalTanaman()" title="Atur Nama Komoditas / Tanaman untuk Chamber ini">
                     <i class="bi bi-pencil-square"></i>
                     <span id="btn-crop-label">Atur Tanaman (Padi)</span>
                 </button>
@@ -366,11 +370,25 @@
                 <div class="col-lg-6">
                     <div class="p-4 rounded-4 shadow-sm border h-100 analytics-card">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h6 class="fw-bold mb-0 text-white"><i class="bi bi-shield-shaded text-info me-2"></i> 1. Klasifikasi Kondisi Lahan</h6>
-                            <span class="badge bg-secondary-subtle text-light border border-light-subtle" id="land-crop-tag">🌱 Padi Inpari 32</span>
+                            <h6 class="fw-bold mb-0 text-white">Klasifikasi Kondisi Lahan</h6>
+                            <div class="badge-crop-tag" id="land-crop-tag" onclick="bukaModalTanaman()" title="Klik untuk edit varietas & data tanaman">
+                                <span class="crop-tag-icon">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="crop-rice-svg">
+                                        <path d="M12 22C12 22 12 14 12 11" stroke="#34d399" stroke-width="2" stroke-linecap="round"/>
+                                        <path d="M12 11C10.5 8.5 8 7 5 7C5 10 6.5 12.5 9 14C10.5 14.9 12 15 12 15" fill="#fbbf24" stroke="#d97706" stroke-width="1.2" stroke-linejoin="round"/>
+                                        <path d="M12 8C13.5 5.5 16 4 19 4C19 7 17.5 9.5 15 11C13.5 11.9 12 12 12 12" fill="#fbbf24" stroke="#d97706" stroke-width="1.2" stroke-linejoin="round"/>
+                                        <path d="M12 14C13.5 11.5 16 10 19 10C19 13 17.5 15.5 15 17C13.5 17.9 12 18 12 18" fill="#34d399" stroke="#059669" stroke-width="1.2" stroke-linejoin="round"/>
+                                        <path d="M12 17C10.5 14.5 8 13 5 13C5 16 6.5 18.5 9 20C10.5 20.9 12 21 12 21" fill="#34d399" stroke="#059669" stroke-width="1.2" stroke-linejoin="round"/>
+                                        <path d="M12 5C11.5 3 12 2 12 2C12 2 12.5 3 12 5Z" fill="#fbbf24" stroke="#d97706" stroke-width="1.2"/>
+                                    </svg>
+                                </span>
+                                <span class="crop-tag-name">Padi Sawah - Inpari 32</span>
+                                <span class="crop-tag-phase">Vegetatif Aktif (21-45 HST)</span>
+                                <i class="bi bi-pencil-fill crop-tag-edit"></i>
+                            </div>
                         </div>
                         
-                        <div class="text-white-50 small mb-2">Pertanyaan Utama Sistem: <em>"Bagaimana kondisi tanah saat ini?"</em></div>
+                        <div class="text-white-50 small mb-2">Status Kondisi Tanah:</div>
                         
                         <!-- Indikator Status Lahan -->
                         <div id="land-status-badge" class="land-status-badge badge-aman mb-3">
@@ -382,7 +400,7 @@
                         <div class="p-3 rounded-3 bg-white-5 border border-white-10 mb-3">
                             <div class="d-flex justify-content-between align-items-center mb-1">
                                 <span class="small text-white-50"><i class="bi bi-cpu-fill text-primary me-1"></i> Confidence Score (Tingkat Keyakinan AI)</span>
-                                <span class="badge bg-primary px-2 py-1" id="land-accuracy-pill">Akurasi Prediksi: 94.5%</span>
+                                <span class="badge-ai-accuracy" id="land-accuracy-pill"><i class="bi bi-patch-check-fill me-1"></i> Akurasi Prediksi: 94.5%</span>
                             </div>
                             <div class="d-flex align-items-center gap-3 mt-2">
                                 <h3 class="fw-bold text-white mb-0" id="land-confidence-val">94.5%</h3>
@@ -405,8 +423,10 @@
                 <div class="col-lg-6">
                     <div class="p-4 rounded-4 shadow-sm border h-100 analytics-card">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h6 class="fw-bold mb-0 text-white"><i class="bi bi-lightning-charge-fill text-warning me-2"></i> 2. Rekomendasi Dosis Pupuk</h6>
-                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle">Actionable Insight</span>
+                            <h6 class="fw-bold mb-0 text-white">Rekomendasi Dosis Pupuk</h6>
+                            <span class="badge-actionable-insight">
+                                Actionable Insight
+                            </span>
                         </div>
 
                         <!-- Status Tindakan -->
@@ -426,8 +446,12 @@
                                 <span class="text-white-50 fw-semibold">kg / Ha saat ini</span>
                             </div>
                             <div class="d-flex flex-wrap gap-2 mt-2">
-                                <span class="badge bg-dark border border-secondary text-light py-1 px-2" id="fert-urea-text">Urea: 35 - 50 kg/Ha</span>
-                                <span class="badge bg-dark border border-secondary text-light py-1 px-2" id="fert-npk-text">NPK: 75 - 100 kg/Ha</span>
+                                <span class="fert-dose-pill pill-urea" id="fert-urea-text">
+                                    <i class="bi bi-droplet-half text-info me-1"></i> Urea: 35 - 50 kg/Ha
+                                </span>
+                                <span class="fert-dose-pill pill-npk" id="fert-npk-text">
+                                    <i class="bi bi-flower2 text-success me-1"></i> NPK: 75 - 100 kg/Ha
+                                </span>
                             </div>
                         </div>
 
@@ -447,7 +471,7 @@
                 <div class="col-12">
                     <div class="p-4 rounded-4 shadow-sm border analytics-card">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h6 class="fw-bold mb-0 text-white"><i class="bi bi-grid-3x3-gap-fill text-primary me-2"></i> 3. Matriks Parameter Prediktor (Dasar Keputusan AI)</h6>
+                            <h6 class="fw-bold mb-0 text-white">Matriks Parameter Prediktor (Dasar Keputusan AI)</h6>
                             <span class="text-white-50 small"><i class="bi bi-clock-history me-1"></i> Rata-rata Harian & Tren vs Hari Sebelumnya</span>
                         </div>
 
@@ -499,7 +523,7 @@
                     <div class="p-4 rounded-4 shadow-sm border analytics-card">
                         <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
                             <div>
-                                <h6 class="fw-bold mb-0 text-white"><i class="bi bi-graph-up-arrow text-info me-2"></i> 4. Grafik Prediksi Tren Emisi Metana (Forecasting 3–5 Hari)</h6>
+                                <h6 class="fw-bold mb-0 text-white">Grafik Prediksi Tren Emisi Metana (Forecasting 3–5 Hari)</h6>
                                 <div class="text-white-50 small">Memproyeksikan dinamika gas CH₄ untuk kesiapan jadwal pemupukan padi</div>
                             </div>
                             
@@ -539,7 +563,7 @@
                     <div class="p-4 rounded-4 shadow-sm border analytics-card">
                         <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
                             <div>
-                                <h6 class="fw-bold mb-0 text-white"><i class="bi bi-clipboard2-check-fill text-success me-2"></i> 5. Log Evaluasi Keputusan & Dataset Pelatihan Ulang (Retraining)</h6>
+                                <h6 class="fw-bold mb-0 text-white">Log Evaluasi Keputusan & Dataset Pelatihan Ulang (Retraining)</h6>
                                 <div class="text-white-50 small">Riwayat rekomendasi dan feedback validasi operator untuk hyperparameter tuning model AI</div>
                             </div>
                             <div class="d-flex gap-2">
@@ -935,6 +959,8 @@
                 </div>
             </div>
         </div>
+    </div>
+
     <!-- MODAL ATUR METADATA TANAMAN CHAMBER -->
     <div class="modal fade" id="modalTanamanChamber" tabindex="-1" aria-hidden="true" style="z-index: 1070;">
         <div class="modal-dialog modal-dialog-centered">
@@ -989,7 +1015,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-    <script src="script.js"></script>
+    <script src="script.js?v=2.3"></script>
     <script>
         // Inisialisasi Tooltip Bootstrap
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
